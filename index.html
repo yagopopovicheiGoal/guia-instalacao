@@ -38,7 +38,7 @@ h3{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.14e
 .plinks button .n{font-family:var(--mono);color:var(--lime);margin-right:6px}
 .plinks button[aria-current=true]{background:var(--lime);border-color:var(--lime);color:#08131E}
 .plinks button[aria-current=true] .n{color:#0B2A44}
-.cards{display:none}
+.cards{display:none!important}
 .hero svg{width:100%;height:auto;display:block}
 .hot{cursor:pointer}
 .hot:focus-visible{outline:none}
@@ -141,7 +141,7 @@ html.embed .wrap{padding-block:12px 24px}
 
   <nav class="cards" id="cards" aria-label="Escolha a ligação"></nav>
 
-  <section class="player" aria-labelledby="pTitle">
+  <section class="player tut" aria-labelledby="pTitle" hidden>
     <div class="head"><h2 id="pTitle"></h2><span class="pill" id="pPill"></span></div>
     <div class="stage" id="stage">
       <svg id="scene" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-label="Animação da instalação"></svg>
@@ -162,12 +162,12 @@ html.embed .wrap{padding-block:12px 24px}
     <ol class="steps" id="steps"></ol>
   </section>
 
-  <section class="box" aria-labelledby="hTb">
+  <section class="box tut" aria-labelledby="hTb" hidden>
     <div class="head"><h3 id="hTb" style="margin:0">Tabela de bornes do iGate S</h3><span class="msg" style="color:var(--muted);font-size:13px">igual à etiqueta lateral · destacados os bornes desta ligação</span></div>
     <div class="tbl" id="tbl"></div>
   </section>
 
-  <section class="info">
+  <section class="info tut" hidden>
     <div class="box"><h3>Você vai precisar</h3><ul id="mats"></ul></div>
     <div class="box"><h3>Erros comuns</h3><div class="err" id="errs"></div></div>
   </section>
@@ -926,11 +926,14 @@ function cam(t){const C=G.cams;let i=0;while(i<C.length-1&&t>C[i+1][0])i++;const
   if(tb===ta)return {v:va,f:0};
   if(region(va)!==region(vb)){const p=seg(t,ta,tb);return p<.5?{v:va,f:p*2}:{v:vb,f:2-p*2};}
   const p=ease(seg(t,ta,tb));return {v:va.map((x,k)=>x+(vb[k]-x)*p),f:0};}
+let shown=false;
+function reveal(){if(shown)return;shown=true;document.querySelectorAll(".tut").forEach(e=>e.hidden=false);}
 function select(id,play){
   const meta=GUIDES.find(g=>g.id===id)||GUIDES[0];
   svg.innerHTML="";defs(svg);G=meta.build(svg);G.meta=meta;G.cams=G.cams.map(([a,v])=>[a,fit(v)]);
   $("pTitle").textContent=meta.name;$("pPill").textContent=(meta.grp==="gw"?"iGate S · ":"Endpoint · ")+G.pill;$("brand").textContent=G.brand||"iGOAL · iGATE S";
-  document.querySelectorAll(".card,.plinks button").forEach(c=>c.setAttribute("aria-current",c.dataset.id===meta.id));
+  if(play)reveal();
+  document.querySelectorAll(".card,.plinks button").forEach(c=>c.setAttribute("aria-current",shown&&c.dataset.id===meta.id));
   $("scrub").max=G.dur;
   const ol=$("steps");ol.innerHTML="";
   G.steps.forEach((s,i)=>{const li=document.createElement("li"),b=document.createElement("button");b.type="button";
@@ -941,7 +944,7 @@ function select(id,play){
   $("tbl").innerHTML=[[[1,2,3,4,9,10,11,12],"Conectores de cima"],[[5,6,7,8,13,14,15,16],"Conectores de baixo"]].map(([L,c])=>`<div class="col"><div class="cap2">${c}</div>${L.map(n=>`<div class="r${(G.borns||[]).includes(n)?" on":""}"><span class="nb">${n}</span><span class="fn">${TB[n][0]}</span><span class="gp">${TB[n][1]||"não conectado"}</span></div>`).join("")}</div>`).join("");
   $("errs").innerHTML=G.errs.map(([a,b])=>`<div><b>${a}</b><span>${b}</span></div>`).join("");
   t=0;lastStep=-1;render(0);setPlay(!!play&&!matchMedia("(prefers-reduced-motion: reduce)").matches);
-  if(location.hash!=="#"+meta.id)history.replaceState(null,"","#"+meta.id);
+  if(shown&&location.hash!=="#"+meta.id)history.replaceState(null,"","#"+meta.id);
   if(play&&!EMBED)$("stage").scrollIntoView({behavior:"smooth",block:"center"});
   if(play&&EMBED){try{const r=$("pTitle").getBoundingClientRect();parent.postMessage({igoalScrollTo:Math.round(r.top+window.scrollY-12)},"*");}catch(e){}}
 }
@@ -965,14 +968,14 @@ document.addEventListener("keydown",e=>{
   if(e.key===" "){e.preventDefault();if(t>=G.dur)t=0;setPlay(!playing);}
   if(e.key==="ArrowRight"||e.key==="ArrowLeft"){let si=0;while(si<G.steps.length-1&&t>=G.steps[si+1].a)si++;si=clamp(si+(e.key==="ArrowRight"?1:-1),0,G.steps.length-1);t=G.steps[si].a+.01;render(t);}
 });
-window.addEventListener("hashchange",()=>{const id=location.hash.slice(1);if(GUIDES.some(g=>g.id===id)&&id!==G.meta.id)select(id,false);});
+window.addEventListener("hashchange",()=>{const id=location.hash.slice(1);if(GUIDES.some(g=>g.id===id)&&id!==G.meta.id){reveal();select(id,false);}});
 const h=location.hash.slice(1);
 if(EMBED){
   const send=()=>{try{parent.postMessage({igoalGuiaHeight:Math.ceil(document.documentElement.scrollHeight)},"*");}catch(e){}};
   try{new ResizeObserver(send).observe(document.body);}catch(e){}
   window.addEventListener("load",send);setTimeout(send,300);
 }
-select(GUIDES.some(g=>g.id===h)?h:"alimentacao",false);
+if(GUIDES.some(g=>g.id===h)){reveal();select(h,false);}else select("alimentacao",false);
 requestAnimationFrame(loop);
 })();
 </script>
