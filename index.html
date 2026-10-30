@@ -92,7 +92,17 @@ button.primary{background:var(--lime);color:#08131E;border-color:var(--lime);min
 .err span{color:var(--muted);font-size:14px}
 .foot{color:var(--muted);font-size:12px;max-width:100ch}
 .ebar{display:none}
-html.embed .wrap{padding-block:12px 24px}
+html.embed .wrap{padding-block:14px 24px;gap:14px}
+html.embed .hero{gap:12px}
+html.embed .htxt{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;max-width:none}
+html.embed .htxt .eyebrow{flex-basis:100%}
+html.embed h1{font-size:clamp(22px,2.6vw,30px);margin:0}
+html.embed .lead{display:none}
+html.embed .badges{margin-top:0}
+html.embed .prod{padding:14px 16px 14px}
+html.embed .prod h2{font-size:24px}
+html.embed .prod .pd{font-size:13px}
+html.embed .prod svg{max-height:340px;width:100%}
 .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .badge{font-size:13px;color:#c3d1dc;border:1px solid var(--line-2);background:var(--panel);border-radius:999px;padding:5px 12px}
 .badge b{color:var(--lime);font-weight:600}
@@ -971,8 +981,8 @@ document.addEventListener("keydown",e=>{
 window.addEventListener("hashchange",()=>{const id=location.hash.slice(1);if(GUIDES.some(g=>g.id===id)&&id!==G.meta.id){reveal();select(id,false);}});
 const h=location.hash.slice(1);
 if(EMBED){
-  const send=()=>{try{parent.postMessage({igoalGuiaHeight:Math.ceil(document.documentElement.scrollHeight)},"*");}catch(e){}};
-  try{new ResizeObserver(send).observe(document.body);}catch(e){}
+  const send=()=>{try{parent.postMessage({igoalGuiaHeight:Math.ceil(document.querySelector(".wrap").getBoundingClientRect().height)+4},"*");}catch(e){}};
+  try{new ResizeObserver(send).observe(document.querySelector(".wrap"));}catch(e){}
   window.addEventListener("load",send);setTimeout(send,300);
 }
 if(GUIDES.some(g=>g.id===h)){reveal();select(h,false);}else select("alimentacao",false);
