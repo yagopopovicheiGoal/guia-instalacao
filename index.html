@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
+<link rel="icon" type="image/png" href="marca/favicon-64.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
@@ -92,7 +93,21 @@ button.primary{background:var(--lime);color:#08131E;border-color:var(--lime);min
 .err b{font-weight:600}
 .err span{color:var(--muted);font-size:14px}
 .foot{color:var(--muted);font-size:12px;max-width:100ch}
+.hlogo{display:block;height:34px;width:auto;margin-bottom:18px}
 .ebar{display:none}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(3,8,14,.74);backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;padding:clamp(8px,3vw,32px);overflow:auto;overscroll-behavior:contain}
+.mbox{width:min(1240px,100%);background:var(--bg);border:1px solid var(--line-2);border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6);display:grid;gap:16px;padding:0 clamp(12px,2vw,24px) 24px;min-width:0}
+.mhead{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 12px;background:var(--bg);border-bottom:1px solid var(--line)}
+.mhead b{font-family:var(--display);font-size:clamp(20px,2.4vw,28px);line-height:1.1}
+.mclose{flex:none;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--fg);font:600 15px var(--body);cursor:pointer}
+.mclose:hover{border-color:var(--lime)}
+.mclose:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.mbody{display:grid;gap:16px;min-width:0}
+.mbody #pTitle{display:none}
+html.mopen,html.mopen body{overflow:hidden}
+html.embed .modal{position:absolute;bottom:auto;min-height:100%}
+html.embed.mopen,html.embed.mopen body{overflow:visible}
+@media (prefers-reduced-motion:no-preference){.mbox{animation:mIn .22s ease-out}@keyframes mIn{from{opacity:0;transform:translateY(14px)}}}
 html.embed .wrap{padding-block:14px 24px;gap:14px}
 html.embed .hero{gap:12px}
 html.embed .htxt{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;max-width:none}
@@ -127,7 +142,8 @@ html.embed .prod svg{max-height:340px;width:100%}
   <div class="ebar" id="ebar"><span class="eyebrow">iGoal · Guia de instalação</span><a id="efull" href="./" target="_blank" rel="noopener">Abrir em página inteira ↗</a></div>
   <section class="hero">
     <div class="htxt">
-      <div class="eyebrow">iGoal Tecnologia · Guia de instalação</div>
+      <img class="hlogo" src="marca/logo-igoal-branco.png" alt="iGoal Tecnologia">
+      <div class="eyebrow">Guia de instalação</div>
       <h1>Como instalar o iGate S e os endpoints iGoal</h1>
       <p class="lead">Escolha o equipamento e depois a ligação. Cada opção mostra a instalação em animação, passo a passo, com os bornes certos e o que conferir no final.</p>
       <div class="badges"><span class="badge"><b>Envio pela rede celular</b> com chip M2M</span><span class="badge"><b>Dados na Dex</b>, a plataforma da iGoal</span></div>
@@ -151,6 +167,13 @@ html.embed .prod svg{max-height:340px;width:100%}
   </section>
 
   <nav class="cards" id="cards" aria-label="Escolha a ligação"></nav>
+
+  <div class="modal" id="modal" hidden>
+    <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+      <div class="mhead"><b id="mTitle"></b><button type="button" class="mclose" id="mclose">Fechar ✕</button></div>
+      <div class="mbody" id="mbody"></div>
+    </div>
+  </div>
 
   <section class="player tut" aria-labelledby="pTitle" hidden>
     <div class="head"><h2 id="pTitle"></h2><span class="pill" id="pPill"></span></div>
@@ -185,7 +208,7 @@ html.embed .prod svg{max-height:340px;width:100%}
   </section>
 
   <section class="ext" id="ext" hidden>
-    <iframe id="extFrame" title="Zerar contadores e publicar" style="display:block;width:100%;height:780px;border:0"></iframe>
+    <iframe id="extFrame" allow="serial" title="Zerar contadores e publicar" style="display:block;width:100%;height:780px;border:0"></iframe>
   </section>
 
   <p class="foot">Material de apoio da iGoal. Bornes conforme a etiqueta do iGate S: alimentação 9 a 30 Vcc nos bornes 3 (GND) e 4 (VCC); receptor do cabo óptico SSU nos bornes 1 (SU+) e 2 (SU−), com o emissor na saída SSU do medidor; RS485 no 9 (B), 10 (GND) e 11 (A); entradas digitais em 13 a 16 (até 24 Vcc); Modbus TCP pela porta Ethernet. Medidores, multimedidor, sensor, equipamento Modbus TCP, fonte, cores de fios, displays e valores são ilustrativos: siga o manual de cada equipamento.</p>
@@ -891,6 +914,7 @@ const GUIDES=[
   {id:"esquema-ligacao",grp:"gw",name:"Esquema de ligação",tag:"Gateway no trilho DIN · bornes 1 a 16",d:"O gateway em 3D: escolha a ligação e veja cada fio no seu borne.",ext:"gateway-3d.html"},
   {id:"endpoint-lorawan",grp:"ep",name:"Endpoint LoRaWAN",tag:"Pulso · até 8 medidores",d:"Shaft com 4 apartamentos: 8 medidores de gás e água.",build:buildEndpoint("lora")},
   {id:"endpoint-nbiot",grp:"ep",name:"Endpoint NB-IoT",tag:"Pulso · até 8 medidores",d:"Shaft com 4 apartamentos: 8 medidores, rede NB-IoT.",build:buildEndpoint("nb")},
+  {id:"configurar-nb",grp:"ep",name:"Configurar broker e APN do iGate NB",tag:"iGate NB · conversor FTDI · Chrome ou Edge",d:"Troca o servidor MQTT e a operadora da placa pela serial, direto no navegador.",ext:"configurador/"},
   {id:"zerar-publicar",grp:"ep",name:"Zerar contadores e publicar",tag:"Botões SW1 e SW2 · dentro do gabinete",d:"Zerar os contadores e forçar uma publicação pelos botões da placa.",ext:"reset-igatenb.html"},
 ];
 
@@ -963,8 +987,7 @@ function select(id,play){
     if(G)G.meta=meta;
     document.querySelectorAll(".card,.plinks button").forEach(c=>c.setAttribute("aria-current",c.dataset.id===meta.id));
     if(location.hash!=="#"+meta.id)history.replaceState(null,"","#"+meta.id);
-    if(play&&!EMBED)$("ext").scrollIntoView({behavior:"smooth",block:"start"});
-    if(play&&EMBED){try{const r=$("ext").getBoundingClientRect();parent.postMessage({igoalScrollTo:Math.round(r.top+window.scrollY-12)},"*");}catch(e){}}
+    if(play)openModal(meta);
     return;
   }
   if(shown)document.querySelectorAll(".tut").forEach(e=>e.hidden=false);
@@ -984,8 +1007,7 @@ function select(id,play){
   $("errs").innerHTML=G.errs.map(([a,b])=>`<div><b>${a}</b><span>${b}</span></div>`).join("");
   t=0;lastStep=-1;render(0);setPlay(!!play&&!matchMedia("(prefers-reduced-motion: reduce)").matches);
   if(shown&&location.hash!=="#"+meta.id)history.replaceState(null,"","#"+meta.id);
-  if(play&&!EMBED)$("stage").scrollIntoView({behavior:"smooth",block:"center"});
-  if(play&&EMBED){try{const r=$("pTitle").getBoundingClientRect();parent.postMessage({igoalScrollTo:Math.round(r.top+window.scrollY-12)},"*");}catch(e){}}
+  if(play)openModal(meta);
 }
 function render(t){
   const cv=cam(t);svg.setAttribute("viewBox",cv.v.join(" "));$("fade").style.opacity=cv.f;G.update(t);
@@ -1004,11 +1026,35 @@ $("restart").addEventListener("click",()=>{t=0;render(0);setPlay(true);});
 $("scrub").addEventListener("input",e=>{t=+e.target.value;render(t);});
 $("fs").addEventListener("click",()=>{try{const s=$("stage");(s.requestFullscreen?s.requestFullscreen():Promise.reject()).catch(()=>{});}catch(e){}});
 document.addEventListener("keydown",e=>{
-  if(e.target.closest&&e.target.closest("button,input,.hot"))return;
+  if(modal.hidden||(e.target.closest&&e.target.closest("button,input,.hot")))return;
   if(e.key===" "){e.preventDefault();if(t>=G.dur)t=0;setPlay(!playing);}
   if(e.key==="ArrowRight"||e.key==="ArrowLeft"){let si=0;while(si<G.steps.length-1&&t>=G.steps[si+1].a)si++;si=clamp(si+(e.key==="ArrowRight"?1:-1),0,G.steps.length-1);t=G.steps[si].a+.01;render(t);}
 });
-window.addEventListener("hashchange",()=>{const id=location.hash.slice(1);if(GUIDES.some(g=>g.id===id)&&id!==G.meta.id){reveal();select(id,false);}});
+/* ---------- janela sobreposta ---------- */
+const modal=$("modal"),mbody=$("mbody");
+document.querySelectorAll(".player.tut,.box.tut,.info.tut,#ext").forEach(s=>mbody.appendChild(s));
+let lastFocus=null;
+function sendHeight(){if(!EMBED)return;try{const w=document.querySelector(".wrap").getBoundingClientRect().height,m=modal.hidden?0:modal.querySelector(".mbox").getBoundingClientRect().height+64;parent.postMessage({igoalGuiaHeight:Math.ceil(Math.max(w,m))+4},"*");}catch(e){}}
+function openModal(meta){
+  $("mTitle").textContent=meta.name;
+  if(modal.hidden){lastFocus=document.activeElement;modal.hidden=false;document.documentElement.classList.add("mopen");modal.scrollTop=0;}
+  setTimeout(()=>$("mclose").focus({preventScroll:true}),30);
+  if(EMBED){sendHeight();try{parent.postMessage({igoalScrollTo:0},"*");}catch(e){}}
+}
+function closeModal(){
+  if(modal.hidden)return;
+  modal.hidden=true;document.documentElement.classList.remove("mopen");setPlay(false);
+  const f=$("extFrame");if(f.dataset.u){f.src="about:blank";f.dataset.u="";}   // descarrega a página (o configurador solta a porta COM)
+  document.querySelectorAll(".card,.plinks button").forEach(c=>c.setAttribute("aria-current","false"));
+  history.replaceState(null,"",location.pathname+location.search);
+  if(lastFocus&&lastFocus.focus)lastFocus.focus({preventScroll:true});
+  sendHeight();
+}
+$("mclose").addEventListener("click",closeModal);
+modal.addEventListener("click",e=>{if(e.target===modal)closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!modal.hidden){e.preventDefault();closeModal();}});
+try{new ResizeObserver(sendHeight).observe(modal.querySelector(".mbox"));}catch(e){}
+window.addEventListener("hashchange",()=>{const id=location.hash.slice(1);if(GUIDES.some(g=>g.id===id)&&(id!==G.meta.id||modal.hidden)){reveal();select(id,true);}});
 const h=location.hash.slice(1);
 if(EMBED){
   const send=()=>{try{parent.postMessage({igoalGuiaHeight:Math.ceil(document.querySelector(".wrap").getBoundingClientRect().height)+4},"*");}catch(e){}};
@@ -1016,7 +1062,7 @@ if(EMBED){
   window.addEventListener("load",send);setTimeout(send,300);
 }
 select("alimentacao",false);
-if(GUIDES.some(g=>g.id===h)){reveal();select(h,false);}
+if(GUIDES.some(g=>g.id===h)){reveal();select(h,false);openModal(GUIDES.find(g=>g.id===h));}
 window.addEventListener("message",e=>{const f=$("extFrame");if(e.source===f.contentWindow&&e.data&&e.data.igoalGuiaHeight)f.style.height=e.data.igoalGuiaHeight+"px";});
 requestAnimationFrame(loop);
 })();
