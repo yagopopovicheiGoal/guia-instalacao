@@ -1,4 +1,5 @@
 /* iGate-NB em 3D (three.js r128) para o configurador serial.
+   Placa: modelo KiCad IGateNB Rev 2.0 (igatenb.glb, comprimido com meshopt) quando carrega; sem ele fica a placa desenhada abaixo.
    Placa, gabinete e bateria vêm do modelo da página "Zerar contadores e publicar" (guia-instalacao/reset-igatenb.html);
    aqui a tampa fica aberta ao lado e um conversor FTDI liga TX/RX/GND no J3 com os fios cruzados.
    J3 (três pinos em pé, perto do reed SW3) = serial da foto do manual: TX na borda (z 21,04), RX no meio, GND para dentro.
@@ -23,7 +24,10 @@
     var d1 = new T.DirectionalLight(0xffffff, 0.6); d1.position.set(30, 70, 45); scene.add(d1);
     var d2 = new T.DirectionalLight(0xffffff, 0.2); d2.position.set(-50, 35, -30); scene.add(d2);
 
-    var board = new T.Group(); scene.add(board);
+    var board = new T.Group(); scene.add(board);          // placa desenhada (reserva)
+    var extras = new T.Group(); scene.add(extras);        // cabo da bateria, apoios, cabo do J2, jumpers
+    var cableG = new T.Group(); extras.add(cableG);
+    var jumpersG = new T.Group(); extras.add(jumpersG);
     function mat(color, o) { o = o || {}; o.color = color; if (o.roughness === undefined) o.roughness = 0.6; return new T.MeshStandardMaterial(o); }
     var M = {
       pcb: mat(0x143a29, { roughness: 0.5 }), ring: mat(0x3f9a63, { roughness: 0.5 }),
@@ -65,7 +69,7 @@
     function bwire(x, m, o) {
       var c = new T.CatmullRomCurve3([new T.Vector3(x, 3, -21.6), new T.Vector3(x, 8, -24.5), new T.Vector3(x + 7, 11, -27.5 + o), new T.Vector3(20, 11.5, -27 + o),
         new T.Vector3(34 + o, 11, -12), new T.Vector3(35 + o, 10, 10), new T.Vector3(34 + o, 9.5, 30), new T.Vector3(31, 8.5 + o, 41), new T.Vector3(27.2, 8 + o, 44)]);
-      board.add(new T.Mesh(new T.TubeGeometry(c, 160, 0.65, 10), m));
+      extras.add(new T.Mesh(new T.TubeGeometry(c, 160, 0.65, 10), m));
     }
     bwire(-15.9, M.wireBlack, 1.4); bwire(-13.9, M.red, 0);
 
@@ -166,7 +170,7 @@
       var slot = new T.Mesh(new T.BoxGeometry(2, 3.2, 8), M.gland); slot.position.set(t[0], -6.4, t[1] * (CD / 2 + 9)); caseG.add(slot);
     });
     var div = new T.Mesh(new T.BoxGeometry(CW - 6, 16, 2), M.caseBase); div.position.set(0, 3, 14.5); caseG.add(div);
-    holes.forEach(function (h) { cyl(3.4, 3.4, M.caseBase, h[0], h[1], -5); cyl(2.7, 0.9, M.gland, h[0], h[1], 0, 20); });
+    [[-22.6, -17.5], [21.8, 17.4]].forEach(function (h) { var b1 = new T.Mesh(new T.CylinderGeometry(3.4, 3.4, 3.4, 28), M.caseBase); b1.position.set(h[0], -3.3, h[1]); extras.add(b1); });
     (function () {
       var cv = document.createElement('canvas'); cv.width = 1024; cv.height = 512; var cx = cv.getContext('2d');
       cx.fillStyle = '#1f55d6'; cx.fillRect(0, 0, 1024, 512);
@@ -178,26 +182,30 @@
       var side = new T.MeshStandardMaterial({ map: tx, roughness: 0.35 }), end = mat(0x1f55d6, { roughness: 0.35 });
       var b = new T.Mesh(new T.CylinderGeometry(13, 13, 50, 40), [side, end, end]); b.rotation.z = Math.PI / 2; b.position.set(2, 8, 30); caseG.add(b);
     })();
-    /* cabo do endpoint no J2: 8 pares (16 vias), canal 1 amarelo ... canal 8 laranja, cor sólida + cor com branco */
-    (function () {
-      var PAIRS = [0xF4E94B, 0x1f3fbf, 0xFF2A12, 0xA47A45, 0x19C219, 0xBDBDBD, 0x8E1F95, 0xFF9500];
-      function striped(c) {
-        var cv = document.createElement('canvas'); cv.width = 64; cv.height = 8; var cx = cv.getContext('2d');
-        cx.fillStyle = '#f4f4f0'; cx.fillRect(0, 0, 64, 8);
-        cx.fillStyle = '#' + ('00000' + c.toString(16)).slice(-6); cx.fillRect(0, 0, 22, 8); cx.fillRect(32, 0, 22, 8);
-        var tx = new T.CanvasTexture(cv); tx.encoding = T.sRGBEncoding; tx.wrapS = T.RepeatWrapping; tx.repeat.set(9, 1);
-        return new T.MeshStandardMaterial({ map: tx, roughness: 0.5 });
-      }
+    /* cabo do endpoint no J2: 8 pares (16 vias), canal 1 amarelo ... canal 8 laranja, cor sólida + cor com branco.
+       Coluna k do J2 = canal k+1; fileira de fora (borda da placa) = cor sólida, fileira de dentro = cor com listra branca. */
+    var PAIRS = [0xF4E94B, 0x1f3fbf, 0xFF2A12, 0xA47A45, 0x19C219, 0xBDBDBD, 0x8E1F95, 0xFF9500];
+    function striped(c) {
+      var cv = document.createElement('canvas'); cv.width = 64; cv.height = 8; var cx = cv.getContext('2d');
+      cx.fillStyle = '#f4f4f0'; cx.fillRect(0, 0, 64, 8);
+      cx.fillStyle = '#' + ('00000' + c.toString(16)).slice(-6); cx.fillRect(0, 0, 22, 8); cx.fillRect(32, 0, 22, 8);
+      var tx = new T.CanvasTexture(cv); tx.encoding = T.sRGBEncoding; tx.wrapS = T.RepeatWrapping; tx.repeat.set(9, 1);
+      return new T.MeshStandardMaterial({ map: tx, roughness: 0.5 });
+    }
+    function buildCable(j2) {
+      while (cableG.children.length) cableG.remove(cableG.children[0]);
+      var mx = j2.x0 + 3.5 * 2.54, y = j2.top;
       PAIRS.forEach(function (c, k) {
         [0, 1].forEach(function (row) {
-          var x = -27.6 + k * 2.54, z = -12.7 + row * 2.54, o = row - 0.5;
-          var cu = new T.CatmullRomCurve3([new T.Vector3(x, 3.3, z), new T.Vector3(x + 0.3, 8, z - 1.8), new T.Vector3(-18.7 + (k - 3.5) * 0.75 + o * 0.38, 12, -19), new T.Vector3(-18.7 + (k - 3.5) * 0.42 + o * 0.21, 14, -24)]);
-          board.add(new T.Mesh(new T.TubeGeometry(cu, 28, 0.42, 8), row === 0 ? mat(c, { roughness: 0.5 }) : striped(c)));
+          var x = j2.x0 + k * 2.54, z = row ? j2.zIn : j2.zOut, o = row - 0.5;
+          var cu = new T.CatmullRomCurve3([new T.Vector3(x, y, z), new T.Vector3(x + 0.3, y + 4.5, z - 1.8), new T.Vector3(mx + (k - 3.5) * 0.75 + o * 0.38, y + 8.5, j2.zOut - 6.5), new T.Vector3(mx + (k - 3.5) * 0.42 + o * 0.21, y + 10.5, j2.zOut - 11.5)]);
+          cableG.add(new T.Mesh(new T.TubeGeometry(cu, 28, 0.42, 8), row === 0 ? mat(c, { roughness: 0.5 }) : striped(c)));
         });
       });
-    })();
-    var cb = new T.CatmullRomCurve3([new T.Vector3(-18.7, 13.5, -22.5), new T.Vector3(-18.5, 21, -28), new T.Vector3(-18, 31, -42), new T.Vector3(-17, 40, -66)]);
-    board.add(new T.Mesh(new T.TubeGeometry(cb, 40, 3.3, 16), M.gland));
+      var cb = new T.CatmullRomCurve3([new T.Vector3(mx, y + 10, j2.zOut - 10), new T.Vector3(mx + 0.2, y + 17.5, j2.zOut - 15.5), new T.Vector3(mx + 0.7, y + 27.5, j2.zOut - 29.5), new T.Vector3(mx + 1.7, y + 36.5, j2.zOut - 53.5)]);
+      cableG.add(new T.Mesh(new T.TubeGeometry(cb, 40, 3.3, 16), M.gland));
+    }
+    buildCable({ x0: -27.6, zOut: -12.7, zIn: -10.16, top: 3.3 });
     /* tampa aberta, apoiada do lado direito do gabinete */
     var lid = new T.Group(); caseG.add(lid);
     var LX = CW / 2;
@@ -236,18 +244,26 @@
     function ftdiPin(name) { return new T.Vector3(15.5, 0, fpin[labels.indexOf(name)]).applyMatrix4(F.matrixWorld); }
 
     /* ---------- jumpers: TX→RX, RX→TX, GND→GND ---------- */
-    function dupont(p, color, parent) {
+    function dupont(p, color) {
       var g = new T.Mesh(new T.BoxGeometry(2.5, 9, 2.5), M.black); g.position.set(p.x, p.y + 7.5, p.z); scene.add(g);
       var c = new T.Mesh(new T.BoxGeometry(2.6, 1.2, 2.6), mat(color)); c.position.set(p.x, p.y + 11.6, p.z); scene.add(c);
     }
     var wires = [['TX', 1, 0x5fb82a], ['RX', 0, 0xf06a1f], ['GND', 2, 0x2a2f35]];
-    wires.forEach(function (w, k) {
-      var a = ftdiPin(w[0]), h = hdr[w[1]], b = new T.Vector3(h.x, 0, h.z);
-      dupont(a, w[2]); dupont(b, w[2]);
-      var pts2 = [new T.Vector3(a.x, a.y + 12, a.z), new T.Vector3(a.x + 2, a.y + 24, a.z - 4), new T.Vector3(-64 + k * 2, 36 + k * 2, 30 - k * 2),
-        new T.Vector3(-45 + k * 1.5, 34 + k * 1.5, 22 + k), new T.Vector3(h.x - 2, 22, h.z + 1), new T.Vector3(h.x, 12, h.z)];
-      scene.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts2), 120, 0.75, 10), mat(w[2], { roughness: 0.4 })));
-    });
+    wires.forEach(function (w) { dupont(ftdiPin(w[0]), w[2]); });
+    var pinTop = 8.5;    // ponta dos pinos do J3
+    function buildJumpers() {
+      while (jumpersG.children.length) jumpersG.remove(jumpersG.children[0]);
+      var hb = pinTop - 6;    // carcaça dupont cobre os últimos 6 mm do pino
+      wires.forEach(function (w, k) {
+        var a = ftdiPin(w[0]), h = hdr[w[1]];
+        var g = new T.Mesh(new T.BoxGeometry(2.5, 9, 2.5), M.black); g.position.set(h.x, hb + 4.5, h.z); jumpersG.add(g);
+        var c = new T.Mesh(new T.BoxGeometry(2.6, 1.2, 2.6), mat(w[2])); c.position.set(h.x, hb + 9.1, h.z); jumpersG.add(c);
+        var pts2 = [new T.Vector3(a.x, a.y + 12, a.z), new T.Vector3(a.x + 2, a.y + 24, a.z - 4), new T.Vector3(-64 + k * 2, 36 + k * 2, 30 - k * 2),
+          new T.Vector3(-45 + k * 1.5, 34 + k * 1.5, 22 + k), new T.Vector3(h.x - 2, hb + 19.5, h.z + 1), new T.Vector3(h.x, hb + 9.5, h.z)];
+        jumpersG.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts2), 120, 0.75, 10), mat(w[2], { roughness: 0.4 })));
+      });
+    }
+    buildJumpers();
 
     /* ---------- rótulos ---------- */
     function tag(t, c) { var e = document.createElement('span'); e.className = 'tag3' + (c ? ' ' + c : ''); e.textContent = t; host.appendChild(e); return e; }
@@ -335,9 +351,9 @@
       ['x', 'z', 'r', 'th', 'ph'].forEach(function (p) { cam[p] += (goal[p] - cam[p]) * k; });
       var th0 = cam.th; cam.th += sway; placeCamera(); cam.th = th0;
       var o = btn.sw2, dt = pressT < 0 ? 1e9 : now - pressT, down = dt < 420;
-      o.cap.position.y += ((o.baseY - (down ? 0.9 : 0)) - o.cap.position.y) * 0.45;
-      o.capM.emissiveIntensity = down ? 1.2 : 0;
-      o.ring.material.opacity = hot ? (reduce ? 0.85 : 0.5 + 0.4 * Math.sin(now / 140)) : 0;
+      if (o.cap) { o.cap.position.y += ((o.baseY - (down ? 0.9 : 0)) - o.cap.position.y) * 0.45; o.capM.emissiveIntensity = down ? 1.2 : 0; }
+      o.ring.material.opacity = down ? 1 : hot ? (reduce ? 0.85 : 0.5 + 0.4 * Math.sin(now / 140)) : 0;
+      o.ring.scale.setScalar(down ? 1.25 : 1);
       renderer.render(scene, camera);
       var r = canvas.getBoundingClientRect();
       v.copy(o.anchor).project(camera); place(swTag, (v.x + 1) / 2 * r.width, (1 - v.y) / 2 * r.height);
@@ -345,6 +361,44 @@
       layoutPins(r.width, r.height);
     }
     requestAnimationFrame(frame);
+
+    /* ---------- placa do KiCad (IGateNB Rev 2.0) ----------
+       Arquivo em metros, canto da placa na origem, face de cima em y = 1,6 mm, 56,7 × 47,5 mm.
+       Medidas na vista de cima (mm, origem no canto): J3 x 1,75 / z 37,7 (GND) 40,2 (RX) 42,7 (TX);
+       SW2 (40,82; 44,75); SW1 (40,82; 36,8); LEDs (30,5 e 32,7; 43,06); J2 colunas x 2,09 + k·2,54, fileiras z 13,2 (borda) e 15,7. */
+    if (opts.glb && T.GLTFLoader) {
+      var loader = new T.GLTFLoader();
+      if (window.MeshoptDecoder && loader.setMeshoptDecoder) loader.setMeshoptDecoder(window.MeshoptDecoder);
+      loader.load(opts.glb, function (gltf) {
+        var CX = 28.35, CZ = 23.75, wrap = new T.Group();
+        wrap.add(gltf.scene); wrap.scale.setScalar(1000); wrap.position.set(-CX, -1.6, -CZ);
+        var green = new T.Color(0x1c4a30).convertSRGBToLinear(), trace = new T.Color(0x2e6b45).convertSRGBToLinear();
+        gltf.scene.traverse(function (m) {
+          if (!m.isMesh) return;
+          (Array.isArray(m.material) ? m.material : [m.material]).forEach(function (mt) {
+            if (mt.name === 'mat_31' || mt.name === 'mat_30') { mt.color.copy(green); mt.transparent = false; mt.opacity = 1; }      // núcleo e máscara de baixo
+            if (mt.name === 'mat_29') { mt.color.copy(trace); mt.transparent = false; mt.opacity = 1; mt.polygonOffset = true; mt.polygonOffsetFactor = -1; mt.polygonOffsetUnits = -1; }   // máscara de cima
+            if (mt.name === 'mat_28') { mt.transparent = false; mt.opacity = 1; mt.polygonOffset = true; mt.polygonOffsetFactor = -3; mt.polygonOffsetUnits = -3; }   // serigrafia
+            if (mt.name === 'mat_27') { mt.polygonOffset = true; mt.polygonOffsetFactor = -2; mt.polygonOffsetUnits = -2; }   // ilhas
+          });
+        });
+        scene.add(wrap); wrap.updateMatrixWorld(true);
+        /* alturas medidas no arquivo original (o raycast do r128 não lê a geometria quantizada do meshopt): pontas do J3 e do J2 em y 10,13 do arquivo */
+        var PIN_TOP = 10.13 - 1.6;
+        board.visible = false;
+        hdr = [{ x: 1.75 - CX, z: 42.79 - CZ }, { x: 1.75 - CX, z: 40.25 - CZ }, { x: 1.75 - CX, z: 37.71 - CZ }];   // TX, RX, GND
+        pinTop = PIN_TOP;
+        buildJumpers();
+        groups[0].pins.forEach(function (q, k) { q.p.set(hdr[k].x, pinTop + 3.9, hdr[k].z); });
+        var j2 = { x0: 2.11 - CX, zOut: 13.23 - CZ, zIn: 15.77 - CZ, top: PIN_TOP };
+        buildCable(j2);
+        var sx = 40.82 - CX, sz = 44.75 - CZ, o = btn.sw2;
+        extras.add(o.ring); extras.add(o.hit);
+        o.ring.position.set(sx, 0.12, sz); o.hit.position.set(sx, 3, sz); o.anchor.set(sx + 9.5, 3, sz + 2.5); o.cap = null;
+        VIEW_BTN.x = sx - 4; VIEW_BTN.z = sz - 4;
+        if (opts.onModel) opts.onModel(true);
+      }, undefined, function (err) { if (window.console) console.warn('Placa 3D do KiCad não carregou; usando a desenhada.', err); if (opts.onModel) opts.onModel(false); });
+    }
 
     return {
       setHot: function (on) { if (hot !== !!on) userTurned = false; hot = !!on; },

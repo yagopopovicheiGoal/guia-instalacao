@@ -152,6 +152,8 @@ button:disabled{opacity:.45;cursor:default}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="configurador/GLTFLoader.js"></script>
+<script src="configurador/meshopt_decoder.js"></script>
 <script>
 (function(){
 'use strict';
@@ -283,7 +285,7 @@ function buildScene(){
   function wire(x,m,o){
     var c=new T.CatmullRomCurve3([new T.Vector3(x,3,-21.6),new T.Vector3(x,8,-24.5),new T.Vector3(x+7,11,-27.5+o),new T.Vector3(20,11.5,-27+o),
       new T.Vector3(34+o,11,-12),new T.Vector3(35+o,10,10),new T.Vector3(34+o,9.5,30),new T.Vector3(31,8.5+o,41),new T.Vector3(27.2,8+o,44)]);
-    board.add(new T.Mesh(new T.TubeGeometry(c,160,0.65,10),m));
+    var wm=new T.Mesh(new T.TubeGeometry(c,160,0.65,10),m);wm.userData.keep=true;board.add(wm);
   }
   wire(-15.9,M.wireBlack,1.4);wire(-13.9,M.red,0);
 
@@ -340,11 +342,12 @@ function buildScene(){
   var lead=new T.Mesh(new T.CylinderGeometry(0.25,0.25,19,8),M.silver);lead.rotation.z=Math.PI/2;lead.position.set(-19,1.2,23.8);board.add(lead);
 
   /* LEDs */
+  var ledGlows=[];
   function led(x,z,color){
     var m=new T.MeshStandardMaterial({color:0xe9ece6,emissive:color,emissiveIntensity:0,roughness:0.4});
     box(0.9,0.6,1.7,m,x,z);
     var glow=new T.Mesh(new T.SphereGeometry(1.6,16,12),new T.MeshBasicMaterial({color:color,transparent:true,opacity:0,depthWrite:false,blending:T.AdditiveBlending}));
-    glow.position.set(x,0.6,z);board.add(glow);
+    glow.position.set(x,0.6,z);glow.userData.keep=true;board.add(glow);ledGlows.push(glow);
     return function(v){m.emissiveIntensity=v*1.6;glow.material.opacity=v*0.55};
   }
   var ledA=led(3.8,18.6,0x36e07a), ledB=led(6.3,18.6,0xffb020);
@@ -356,12 +359,13 @@ function buildScene(){
     var capM=new T.MeshStandardMaterial({color:0x141615,roughness:0.5,emissive:0x1c7a55,emissiveIntensity:0});
     var cap=cyl(1.75,1.7,capM,x,z,3.3);
     var hit=new T.Mesh(new T.BoxGeometry(7.6,7,7.6),new T.MeshBasicMaterial({visible:false}));
-    hit.position.set(x,3,z);hit.userData.id=id;board.add(hit);hits.push(hit);
+    hit.position.set(x,3,z);hit.userData.id=id;hit.userData.keep=true;board.add(hit);hits.push(hit);
     var ring=new T.Mesh(new T.RingGeometry(4.6,5.3,48),new T.MeshBasicMaterial({color:0x56c596,transparent:true,opacity:0,depthWrite:false,side:T.DoubleSide}));
-    ring.rotation.x=-Math.PI/2;ring.position.set(x,0.08,z);board.add(ring);
+    ring.rotation.x=-Math.PI/2;ring.position.set(x,0.08,z);ring.userData.keep=true;board.add(ring);
     btn[id]={cap:cap,capM:capM,baseY:cap.position.y,ring:ring,anchor:new T.Vector3(x+8.5,2.5,z)};
   }
   tact('sw1',14.3,12.2);tact('sw2',14.3,20.7);
+  var procMeshes=board.children.slice();   // peças da placa desenhada (somem quando a placa do KiCad carrega)
 
   /* gabinete conforme as fotos: base preta, vedação vermelha larga, bateria abaixo da placa, tampa parafusada */
   function oct(w,d,c){var q=new T.Shape(),x=w/2,z=d/2;q.moveTo(-x+c,-z);q.lineTo(x-c,-z);q.lineTo(x,-z+c);q.lineTo(x,z-c);q.lineTo(x-c,z);q.lineTo(-x+c,z);q.lineTo(-x,z-c);q.lineTo(-x,-z+c);q.closePath();return q}
@@ -405,7 +409,7 @@ function buildScene(){
     var slot=new T.Mesh(new T.BoxGeometry(2,3.2,8),M.gland);slot.position.set(t[0],-6.4,t[1]*(CD/2+9));caseG.add(slot);
   });
   var div=new T.Mesh(new T.BoxGeometry(CW-6,16,2),M.caseBase);div.position.set(0,3,14.5);caseG.add(div);
-  holes.forEach(function(h){cyl(3.4,3.4,M.caseBase,h[0],h[1],-5);cyl(2.7,0.9,M.gland,h[0],h[1],0,20)});
+  [[-22.65,-17.55],[21.75,17.45]].forEach(function(h){cyl(3.4,3.4,M.caseBase,h[0],h[1],-5);cyl(2.7,0.9,M.gland,h[0],h[1],0,20)});
 
   /* bateria de lítio 3,6 V com etiqueta */
   (function(){
@@ -423,29 +427,29 @@ function buildScene(){
   })();
 
   var cableStub=null;
-  /* cabo do sensor: vias coloridas no J2 que se juntam em um cabo preto */
-  (function(){
-  /* cabo do endpoint no J2: 8 pares (16 vias), canal 1 amarelo ... canal 8 laranja, cor sólida + cor com branco */
-  (function () {
-    var PAIRS = [0xF4E94B, 0x1f3fbf, 0xFF2A12, 0xA47A45, 0x19C219, 0xBDBDBD, 0x8E1F95, 0xFF9500];
-    function striped(c) {
-      var cv = document.createElement('canvas'); cv.width = 64; cv.height = 8; var cx = cv.getContext('2d');
-      cx.fillStyle = '#f4f4f0'; cx.fillRect(0, 0, 64, 8);
-      cx.fillStyle = '#' + ('00000' + c.toString(16)).slice(-6); cx.fillRect(0, 0, 22, 8); cx.fillRect(32, 0, 22, 8);
-      var tx = new T.CanvasTexture(cv); tx.encoding = T.sRGBEncoding; tx.wrapS = T.RepeatWrapping; tx.repeat.set(9, 1);
-      return new T.MeshStandardMaterial({ map: tx, roughness: 0.5 });
-    }
-    PAIRS.forEach(function (c, k) {
-      [0, 1].forEach(function (row) {
-        var x = -27.6 + k * 2.54, z = -12.7 + row * 2.54, o = row - 0.5;
-        var cu = new T.CatmullRomCurve3([new T.Vector3(x, 3.3, z), new T.Vector3(x + 0.3, 8, z - 1.8), new T.Vector3(-18.7 + (k - 3.5) * 0.75 + o * 0.38, 12, -19), new T.Vector3(-18.7 + (k - 3.5) * 0.42 + o * 0.21, 14, -24)]);
-        board.add(new T.Mesh(new T.TubeGeometry(cu, 28, 0.42, 8), row === 0 ? mat(c, { roughness: 0.5 }) : striped(c)));
-      });
-    });
-  })();
-    var cb=new T.CatmullRomCurve3([new T.Vector3(-18.7,13.5,-22.5),new T.Vector3(-18.5,21,-28),new T.Vector3(-18,31,-42),new T.Vector3(-17,40,-66)]);
-    cableStub=new T.Mesh(new T.TubeGeometry(cb,40,3.3,16),M.gland);board.add(cableStub);
-  })();
+  /* cabo do endpoint no J2: 8 pares (16 vias), canal 1 amarelo ... canal 8 laranja, cor sólida + cor com branco.
+     Coluna k do J2 = canal k+1; fileira da borda = cor sólida, fileira de dentro = cor com listra branca. */
+  var cableG=new T.Group();board.add(cableG);
+  var PAIRS=[0xF4E94B,0x1f3fbf,0xFF2A12,0xA47A45,0x19C219,0xBDBDBD,0x8E1F95,0xFF9500];
+  function striped(c){
+    var cv=document.createElement('canvas');cv.width=64;cv.height=8;var cx=cv.getContext('2d');
+    cx.fillStyle='#f4f4f0';cx.fillRect(0,0,64,8);
+    cx.fillStyle='#'+('00000'+c.toString(16)).slice(-6);cx.fillRect(0,0,22,8);cx.fillRect(32,0,22,8);
+    var tx=new T.CanvasTexture(cv);tx.encoding=T.sRGBEncoding;tx.wrapS=T.RepeatWrapping;tx.repeat.set(9,1);
+    return new T.MeshStandardMaterial({map:tx,roughness:0.5});
+  }
+  function buildCable(j2){
+    while(cableG.children.length)cableG.remove(cableG.children[0]);
+    var mx=j2.x0+3.5*2.54,y=j2.top;
+    PAIRS.forEach(function(c,k){[0,1].forEach(function(row){
+      var x=j2.x0+k*2.54,z=row?j2.zIn:j2.zOut,o=row-0.5;
+      var cu=new T.CatmullRomCurve3([new T.Vector3(x,y,z),new T.Vector3(x+0.3,y+4.5,z-1.8),new T.Vector3(mx+(k-3.5)*0.75+o*0.38,y+8.5,j2.zOut-6.5),new T.Vector3(mx+(k-3.5)*0.42+o*0.21,y+10.5,j2.zOut-11.5)]);
+      cableG.add(new T.Mesh(new T.TubeGeometry(cu,28,0.42,8),row===0?mat(c,{roughness:0.5}):striped(c)));
+    })});
+    var cb=new T.CatmullRomCurve3([new T.Vector3(mx,y+10,j2.zOut-10),new T.Vector3(mx+0.2,y+17.5,j2.zOut-15.5),new T.Vector3(mx+0.7,y+27.5,j2.zOut-29.5),new T.Vector3(mx+1.7,y+36.5,j2.zOut-53.5)]);
+    cableStub=new T.Mesh(new T.TubeGeometry(cb,40,3.3,16),M.gland);cableG.add(cableStub);
+  }
+  buildCable({x0:-27.6,zOut:-12.7,zIn:-10.16,top:3.3});
 
   var lid=new T.Group(), lidMeshes=[];lid.position.set(-CW/2,RIM+1,0);caseG.add(lid);
   var LX=CW/2;
@@ -593,6 +597,29 @@ function buildScene(){
 
     renderer.render(scene,camera);
     requestAnimationFrame(frame);
+  }
+  /* placa do KiCad (IGateNB Rev 2.0): arquivo em metros, canto na origem, face de cima em y 1,6 mm, 56,7 × 47,5 mm.
+     Medidas no arquivo (mm): SW1 (40,82; 36,8), SW2 (40,82; 44,75), LEDs (30,5 e 32,7; 43,06), J2 x 2,11 + k·2,54 / z 13,23 e 15,77, pontas dos pinos em y 10,13.
+     Sem o arquivo fica a placa desenhada. */
+  if(T.GLTFLoader){
+    var gl=new T.GLTFLoader();if(window.MeshoptDecoder&&gl.setMeshoptDecoder)gl.setMeshoptDecoder(window.MeshoptDecoder);
+    gl.load('configurador/igatenb.glb',function(gltf){
+      var CX=28.35,CZ=23.75,wrap=new T.Group();wrap.add(gltf.scene);wrap.scale.setScalar(1000);wrap.position.set(-CX,-1.6,-CZ);
+      var green=new T.Color(0x1c4a30).convertSRGBToLinear(),trace=new T.Color(0x2e6b45).convertSRGBToLinear();
+      gltf.scene.traverse(function(m){if(!m.isMesh)return;(Array.isArray(m.material)?m.material:[m.material]).forEach(function(mt){
+        if(mt.name==='mat_31'||mt.name==='mat_30'){mt.color.copy(green);mt.transparent=false;mt.opacity=1}
+        if(mt.name==='mat_29'){mt.color.copy(trace);mt.transparent=false;mt.opacity=1;mt.polygonOffset=true;mt.polygonOffsetFactor=-1;mt.polygonOffsetUnits=-1}
+        if(mt.name==='mat_28'){mt.transparent=false;mt.opacity=1;mt.polygonOffset=true;mt.polygonOffsetFactor=-3;mt.polygonOffsetUnits=-3}
+        if(mt.name==='mat_27'){mt.polygonOffset=true;mt.polygonOffsetFactor=-2;mt.polygonOffsetUnits=-2}
+      })});
+      procMeshes.forEach(function(m){if(!m.userData.keep)m.visible=false});
+      board.add(wrap);
+      var pos={sw1:[40.82-CX,36.8-CZ],sw2:[40.82-CX,44.75-CZ]};
+      Object.keys(pos).forEach(function(id){var o=btn[id],q=pos[id];o.ring.position.set(q[0],0.12,q[1]);o.anchor.set(q[0]+8.5,2.5,q[1]);});
+      hits.forEach(function(h){var q=pos[h.userData.id];if(q)h.position.set(q[0],3,q[1])});
+      ledGlows[0].position.set(30.5-CX,0.9,43.06-CZ);ledGlows[1].position.set(32.7-CX,0.9,43.06-CZ);
+      buildCable({x0:2.11-CX,zOut:13.23-CZ,zIn:15.77-CZ,top:10.13-1.6});
+    },undefined,function(e){if(window.console)console.warn('Placa 3D do KiCad não carregou; usando a desenhada.',e)});
   }
   if(location.hash==='#aberto'){setOpen(true);openT=1;Object.assign(cam,VIEW_BTN);goal=null}
   canvas.style.cursor='grab';

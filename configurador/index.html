@@ -310,6 +310,8 @@ dialog::backdrop{background:#000a}
 </div></section>
 
 <script src="three.min.js"></script>
+<script src="GLTFLoader.js"></script>
+<script src="meshopt_decoder.js"></script>
 <script src="board3d.js"></script>
 <dialog id="pick"><h2>Qual é o conversor?</h2><p class="note">Achei mais de uma porta. O conversor FTDI aparece destacado.</p><div id="pickList" class="plist"></div><button id="pickNo" style="margin-top:12px">Cancelar</button></dialog>
 <script>
@@ -573,7 +575,7 @@ if(APP){
 }
 /* ---------- placa em 3D (sem WebGL fica a foto 2D) ---------- */
 try{
-  if(window.Board3D)b3=Board3D.create($('fig'),{texture:'board.jpg',onSw2Click(){if(mode==='demo'&&tr?.press&&$('fig').classList.contains('hot')){b3.press();tr.press()}}});
+  if(window.Board3D)b3=Board3D.create($('fig'),{glb:'igatenb.glb',onSw2Click(){if(mode==='demo'&&tr?.press&&$('fig').classList.contains('hot')){b3.press();tr.press()}}});
   if(b3)$('fig').classList.add('has3d');
 }catch(e){console.warn('3D indisponível',e);b3=null}
 upd();
