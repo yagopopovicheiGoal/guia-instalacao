@@ -154,6 +154,7 @@ button:disabled{opacity:.45;cursor:default}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="configurador/GLTFLoader.js"></script>
 <script src="configurador/meshopt_decoder.js"></script>
+<script src="configurador/RoomEnvironment.js"></script>
 <script>
 (function(){
 'use strict';
@@ -599,25 +600,30 @@ function buildScene(){
     requestAnimationFrame(frame);
   }
   /* placa do KiCad (IGateNB Rev 2.0): arquivo em metros, canto na origem, face de cima em y 1,6 mm, 56,7 × 47,5 mm.
-     Medidas no arquivo (mm): SW1 (40,82; 36,8), SW2 (40,82; 44,75), LEDs (30,5 e 32,7; 43,06), J2 x 2,11 + k·2,54 / z 13,23 e 15,77, pontas dos pinos em y 10,13.
+     Medidas no arquivo (mm): SW1 (40,82; 36,8), SW2 (40,82; 44,75), LEDs (30,5 e 32,75; 42,0), J2 x 2,11 + k·2,54 / z 13,23 e 15,77, pontas dos pinos em y 10,13.
      Sem o arquivo fica a placa desenhada. */
   if(T.GLTFLoader){
     var gl=new T.GLTFLoader();if(window.MeshoptDecoder&&gl.setMeshoptDecoder)gl.setMeshoptDecoder(window.MeshoptDecoder);
     gl.load('configurador/igatenb.glb',function(gltf){
       var CX=28.35,CZ=23.75,wrap=new T.Group();wrap.add(gltf.scene);wrap.scale.setScalar(1000);wrap.position.set(-CX,-1.6,-CZ);
-      var green=new T.Color(0x1c4a30).convertSRGBToLinear(),trace=new T.Color(0x2e6b45).convertSRGBToLinear();
-      gltf.scene.traverse(function(m){if(!m.isMesh)return;(Array.isArray(m.material)?m.material:[m.material]).forEach(function(mt){
-        if(mt.name==='mat_31'||mt.name==='mat_30'){mt.color.copy(green);mt.transparent=false;mt.opacity=1}
-        if(mt.name==='mat_29'){mt.color.copy(trace);mt.transparent=false;mt.opacity=1;mt.polygonOffset=true;mt.polygonOffsetFactor=-1;mt.polygonOffsetUnits=-1}
-        if(mt.name==='mat_28'){mt.transparent=false;mt.opacity=1;mt.polygonOffset=true;mt.polygonOffsetFactor=-3;mt.polygonOffsetUnits=-3}
-        if(mt.name==='mat_27'){mt.polygonOffset=true;mt.polygonOffsetFactor=-2;mt.polygonOffsetUnits=-2}
-      })});
+      var envTex = null;
+      try { if (T.RoomEnvironment) { var pm = new T.PMREMGenerator(renderer); envTex = pm.fromScene(new T.RoomEnvironment(), 0.04).texture; pm.dispose(); } } catch (e) { envTex = null; }
+      gltf.scene.traverse(function (m) {
+        if (!m.isMesh) return;
+        (Array.isArray(m.material) ? m.material : [m.material]).forEach(function (mt) {
+          if (envTex) { mt.envMap = envTex; mt.envMapIntensity = 1; }
+          if (mt.name === 'mat_29') { mt.polygonOffset = true; mt.polygonOffsetFactor = -3; mt.polygonOffsetUnits = -3; }   // serigrafia por cima
+          if (mt.name === 'mat_28') { mt.polygonOffset = true; mt.polygonOffsetFactor = -2; mt.polygonOffsetUnits = -2; }   // ilhas
+          if (mt.name === 'mat_30' || mt.name === 'mat_31') { mt.depthWrite = false; }                                        // máscara translúcida
+          mt.needsUpdate = true;
+        });
+      });
       procMeshes.forEach(function(m){if(!m.userData.keep)m.visible=false});
       board.add(wrap);
       var pos={sw1:[40.82-CX,36.8-CZ],sw2:[40.82-CX,44.75-CZ]};
       Object.keys(pos).forEach(function(id){var o=btn[id],q=pos[id];o.ring.position.set(q[0],0.12,q[1]);o.anchor.set(q[0]+8.5,2.5,q[1]);});
       hits.forEach(function(h){var q=pos[h.userData.id];if(q)h.position.set(q[0],3,q[1])});
-      ledGlows[0].position.set(30.5-CX,0.9,43.06-CZ);ledGlows[1].position.set(32.7-CX,0.9,43.06-CZ);
+      ledGlows[0].position.set(30.5-CX,0.9,42.0-CZ);ledGlows[1].position.set(32.75-CX,0.9,42.0-CZ);
       buildCable({x0:2.11-CX,zOut:13.23-CZ,zIn:15.77-CZ,top:10.13-1.6});
     },undefined,function(e){if(window.console)console.warn('Placa 3D do KiCad não carregou; usando a desenhada.',e)});
   }

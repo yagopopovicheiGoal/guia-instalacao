@@ -1,5 +1,5 @@
 /* iGate-NB em 3D (three.js r128) para o configurador serial.
-   Placa: modelo KiCad IGateNB Rev 2.0 (igatenb.glb, comprimido com meshopt) quando carrega; sem ele fica a placa desenhada abaixo.
+   Placa: modelo KiCad IGateNB Rev 2.0, v2 (igatenb.glb, comprimido com meshopt; luz RoomEnvironment) quando carrega; sem ele fica a placa desenhada abaixo.
    Placa, gabinete e bateria vêm do modelo da página "Zerar contadores e publicar" (guia-instalacao/reset-igatenb.html);
    aqui a tampa fica aberta ao lado e um conversor FTDI liga TX/RX/GND no J3 com os fios cruzados.
    J3 (três pinos em pé, perto do reed SW3) = serial da foto do manual: TX na borda (z 21,04), RX no meio, GND para dentro.
@@ -228,7 +228,8 @@
     lid.rotation.z = Math.PI; lid.position.set(CW / 2 + 12 + CW, 8.5, 0);
 
     /* ---------- conversor FTDI na mesa, à esquerda e na frente ---------- */
-    var F = new T.Group(); F.position.set(-84, -6.4, 34); F.rotation.y = 0.25; scene.add(F);
+    /* deitado na mesa, afastado do gabinete (jumpers de ~20 cm), pinos virados para o gabinete; USB para fora */
+    var F = new T.Group(); F.position.set(-128, -6.4, 30); F.rotation.y = 0.18; scene.add(F);
     var fc = document.createElement('canvas'); fc.width = 512; fc.height = 256; var fx = fc.getContext('2d');
     fx.fillStyle = '#1d4f8a'; fx.fillRect(0, 0, 512, 256);
     fx.fillStyle = '#e8f0f5'; fx.font = '600 30px Arial, sans-serif'; fx.fillText('USB-SERIAL', 120, 70); fx.font = '22px Arial, sans-serif'; fx.fillText('FTDI · 3,3 V', 120, 104);
@@ -241,6 +242,13 @@
     var fpin = []; for (j = 0; j < 6; j++) { var pz = -6.35 + j * 2.54; box(0.64, 7, 0.64, M.gold, 15.5, pz, 0, F); fpin.push(pz); }
     box(2.6, 2.5, 15.6, M.black, 15.5, 0, 0, F);
     F.updateMatrixWorld(true);
+    /* cabo USB indo para o computador */
+    (function () {
+      var u = new T.Vector3(-23, 1.6, 0).applyMatrix4(F.matrixWorld);
+      var c = new T.CatmullRomCurve3([u, new T.Vector3(u.x - 10, u.y - 1, u.z + 2), new T.Vector3(u.x - 34, -6, u.z + 14), new T.Vector3(u.x - 80, -6.2, u.z + 30), new T.Vector3(u.x - 140, -6.2, u.z + 36)]);
+      scene.add(new T.Mesh(new T.TubeGeometry(c, 80, 1.9, 12), mat(0x9aa3ab, { roughness: 0.55 })));
+      var plug = new T.Mesh(new T.BoxGeometry(9, 4.6, 7), mat(0x2b2f33, { roughness: 0.5 })); plug.position.set(u.x - 4, u.y, u.z); scene.add(plug);
+    })();
     function ftdiPin(name) { return new T.Vector3(15.5, 0, fpin[labels.indexOf(name)]).applyMatrix4(F.matrixWorld); }
 
     /* ---------- jumpers: TX→RX, RX→TX, GND→GND ---------- */
@@ -258,9 +266,13 @@
         var a = ftdiPin(w[0]), h = hdr[w[1]];
         var g = new T.Mesh(new T.BoxGeometry(2.5, 9, 2.5), M.black); g.position.set(h.x, hb + 4.5, h.z); jumpersG.add(g);
         var c = new T.Mesh(new T.BoxGeometry(2.6, 1.2, 2.6), mat(w[2])); c.position.set(h.x, hb + 9.1, h.z); jumpersG.add(c);
-        var pts2 = [new T.Vector3(a.x, a.y + 12, a.z), new T.Vector3(a.x + 2, a.y + 24, a.z - 4), new T.Vector3(-64 + k * 2, 36 + k * 2, 30 - k * 2),
-          new T.Vector3(-45 + k * 1.5, 34 + k * 1.5, 22 + k), new T.Vector3(h.x - 2, hb + 19.5, h.z + 1), new T.Vector3(h.x, hb + 9.5, h.z)];
-        jumpersG.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts2), 120, 0.75, 10), mat(w[2], { roughness: 0.4 })));
+        /* jumper longo: sai do conversor, deita na mesa ao lado dos outros, sobe pela parede do gabinete e desce no J3 */
+        var lift = k * 1.4, side = (k - 1) * 2.6, T0 = -7.15;
+        var pts2 = [new T.Vector3(a.x, a.y + 12, a.z), new T.Vector3(a.x + 2.5, a.y + 17, a.z), new T.Vector3(a.x + 13, T0 + 1.2, a.z + side * 0.6),
+          new T.Vector3(a.x + 26, T0, 26 + side), new T.Vector3(-80, T0, 22 + side), new T.Vector3(-63, T0 + 0.6, 19 + side),
+          new T.Vector3(-55.5, 9, 18 + side * 0.7), new T.Vector3(-51.5, 30 + lift, 17.5 + side * 0.5), new T.Vector3(-42, 31 + lift, (17 + h.z) / 2),
+          new T.Vector3(h.x - 2, hb + 18 + lift / 2, h.z), new T.Vector3(h.x, hb + 9.5, h.z)];
+        jumpersG.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts2, false, 'catmullrom', 0.35), 200, 0.75, 10), mat(w[2], { roughness: 0.4 })));
       });
     }
     buildJumpers();
@@ -318,7 +330,7 @@
     }
 
     /* ---------- câmera em órbita (th = giro, ph = ângulo a partir da vertical) ---------- */
-    var VIEW_ALL = { x: -32, z: 22, r: 235, th: 0.5, ph: 0.74 }, VIEW_BTN = { x: 9, z: 18, r: 130, th: 0.3, ph: 0.45 };
+    var VIEW_ALL = { x: -52, z: 22, r: 265, th: 0.36, ph: 0.8 }, VIEW_BTN = { x: 9, z: 18, r: 130, th: 0.3, ph: 0.45 };
     var cam = Object.assign({}, VIEW_ALL), goal = Object.assign({}, VIEW_ALL), hot = false, userTurned = false, pressT = -1;
     function placeCamera() { var s = Math.sin(cam.ph); camera.position.set(cam.x + cam.r * s * Math.sin(cam.th), cam.r * Math.cos(cam.ph), cam.z + cam.r * s * Math.cos(cam.th)); camera.lookAt(cam.x, 0, cam.z); }
     var drag = null, moved = 0, ray = new T.Raycaster(), ndc = new T.Vector2();
@@ -372,14 +384,16 @@
       loader.load(opts.glb, function (gltf) {
         var CX = 28.35, CZ = 23.75, wrap = new T.Group();
         wrap.add(gltf.scene); wrap.scale.setScalar(1000); wrap.position.set(-CX, -1.6, -CZ);
-        var green = new T.Color(0x1c4a30).convertSRGBToLinear(), trace = new T.Color(0x2e6b45).convertSRGBToLinear();
+        var envTex = null;
+        try { if (T.RoomEnvironment) { var pm = new T.PMREMGenerator(renderer); envTex = pm.fromScene(new T.RoomEnvironment(), 0.04).texture; pm.dispose(); } } catch (e) { envTex = null; }
         gltf.scene.traverse(function (m) {
           if (!m.isMesh) return;
           (Array.isArray(m.material) ? m.material : [m.material]).forEach(function (mt) {
-            if (mt.name === 'mat_31' || mt.name === 'mat_30') { mt.color.copy(green); mt.transparent = false; mt.opacity = 1; }      // núcleo e máscara de baixo
-            if (mt.name === 'mat_29') { mt.color.copy(trace); mt.transparent = false; mt.opacity = 1; mt.polygonOffset = true; mt.polygonOffsetFactor = -1; mt.polygonOffsetUnits = -1; }   // máscara de cima
-            if (mt.name === 'mat_28') { mt.transparent = false; mt.opacity = 1; mt.polygonOffset = true; mt.polygonOffsetFactor = -3; mt.polygonOffsetUnits = -3; }   // serigrafia
-            if (mt.name === 'mat_27') { mt.polygonOffset = true; mt.polygonOffsetFactor = -2; mt.polygonOffsetUnits = -2; }   // ilhas
+            if (envTex) { mt.envMap = envTex; mt.envMapIntensity = 1; }
+            if (mt.name === 'mat_29') { mt.polygonOffset = true; mt.polygonOffsetFactor = -3; mt.polygonOffsetUnits = -3; }   // serigrafia por cima
+            if (mt.name === 'mat_28') { mt.polygonOffset = true; mt.polygonOffsetFactor = -2; mt.polygonOffsetUnits = -2; }   // ilhas
+            if (mt.name === 'mat_30' || mt.name === 'mat_31') { mt.depthWrite = false; }                                        // máscara translúcida
+            mt.needsUpdate = true;
           });
         });
         scene.add(wrap); wrap.updateMatrixWorld(true);
