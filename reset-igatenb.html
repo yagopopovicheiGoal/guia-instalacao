@@ -4,7 +4,7 @@
 <link rel="icon" type="image/png" href="marca/favicon-64.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zerar contadores e publicar no iGateNB</title>
+<title>Zerar Contadores e Publicar no iGate NB</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -91,17 +91,17 @@ button:disabled{opacity:.45;cursor:default}
 </head>
 <body>
 <div class="wrap">
-  <div class="ebar" id="ebar"><span class="eyebrow">iGoal · iGateNB</span><a id="efull" href="./reset-igatenb.html" target="_blank" rel="noopener">Abrir em página inteira ↗</a></div>
+  <div class="ebar" id="ebar"><span class="eyebrow">iGoal · iGate NB</span><a id="efull" href="./reset-igatenb.html" target="_blank" rel="noopener">Abrir em página inteira ↗</a></div>
   <header>
     <img class="hlogo" src="marca/logo-igoal-branco.png" alt="iGoal Tecnologia">
-    <span class="eyebrow">iGoal · iGateNB</span>
-    <h1>Zerar contadores e forçar publicação</h1>
+    <span class="eyebrow">iGoal · iGate NB</span>
+    <h1>Zerar Contadores e Forçar Publicação</h1>
     <p class="sub">Os dois botões ficam na placa, dentro do gabinete. Escolha um procedimento e veja quais botões apertar.</p>
   </header>
 
   <div class="app">
     <div class="stage" id="stage">
-      <canvas id="c" tabindex="0" aria-label="Modelo 3D do iGateNB. Arraste para girar e clique no gabinete para abrir."></canvas>
+      <canvas id="c" tabindex="0" aria-label="Modelo 3D do iGate NB. Arraste para girar e clique no gabinete para abrir."></canvas>
       <div class="views">
         <button type="button" id="toggleCase">Abrir gabinete</button>
         <button type="button" id="viewButtons">Aproximar dos botões</button>
@@ -120,19 +120,19 @@ button:disabled{opacity:.45;cursor:default}
       <section>
         <h2>Ver a animação</h2>
         <div class="row">
-          <button type="button" class="key" id="btnReset">Zerar contadores</button>
-          <button type="button" class="key" id="btnPublish">Forçar publicação</button>
+          <button type="button" class="key" id="btnReset">Zerar Contadores</button>
+          <button type="button" class="key" id="btnPublish">Forçar Publicação</button>
         </div>
       </section>
 
       <div class="status" id="status" data-mode="idle" role="status" aria-live="polite">
         <strong id="statusTitle">Gabinete fechado</strong>
-        <p id="statusText">Escolha Zerar contadores ou Forçar publicação para ver o procedimento.</p>
+        <p id="statusText">Escolha Zerar Contadores ou Forçar Publicação para ver o procedimento.</p>
         <div class="bar"><i id="barFill"></i></div>
       </div>
 
       <section class="proc reset">
-        <h2>Zerar contadores <span class="combo">SW2 + SW1</span></h2>
+        <h2>Zerar Contadores <span class="combo">SW2 + SW1</span></h2>
         <ol>
           <li id="r1"><span class="dot">1</span><span>Pressione <b>SW2</b>, o botão da borda.</span></li>
           <li id="r2"><span class="dot">2</span><span>Logo em seguida, pressione <b>SW1</b>.</span></li>
@@ -140,13 +140,13 @@ button:disabled{opacity:.45;cursor:default}
       </section>
 
       <section class="proc publish">
-        <h2>Forçar publicação <span class="combo">SW2 apenas</span></h2>
+        <h2>Forçar Publicação <span class="combo">SW2 apenas</span></h2>
         <ol>
           <li id="p1"><span class="dot">1</span><span>Pressione <b>SW2</b> e não toque no SW1.</span></li>
         </ol>
       </section>
 
-      <p class="note">Animação ilustrativa. As proporções do gabinete e da placa são aproximadas.</p>
+      <p class="note">Animação ilustrativa. As proporções do gabinete e da placa são aproximadas. Bateria de lítio de 3,6 V e 8.200 mAh, não recarregável: não tente carregar nem ligar em fonte.</p>
     </aside>
   </div>
 </div>
@@ -199,9 +199,9 @@ function run(kind){
   }
   if(kind==='reset'){
     later(wait,function(){tap('sw2');modeEnd=performance.now()+STEP_MS;
-      setStatus('armed','Zerar contadores: passo 1 de 2','Pressione SW2, o botão da borda.');addLog('Reset: SW2 pressionado.')});
+      setStatus('armed','Zerar Contadores: passo 1 de 2','Pressione SW2, o botão da borda.');addLog('Reset: SW2 pressionado.')});
     later(wait+STEP_MS,function(){tap('sw1');
-      setStatus('reset','Zerar contadores: passo 2 de 2','Logo em seguida, pressione SW1. Os contadores são zerados.');addLog('Reset: SW1 pressionado.')});
+      setStatus('reset','Zerar Contadores: passo 2 de 2','Logo em seguida, pressione SW1. Os contadores são zerados.');addLog('Reset: SW1 pressionado.')});
     later(wait+STEP_MS+RESET_MS,function(){
       setStatus('idle','Contadores zerados','A placa voltou a operar normalmente.');addLog('Reset concluído.');setBusy(false)});
   }else{
@@ -412,17 +412,18 @@ function buildScene(){
   var div=new T.Mesh(new T.BoxGeometry(CW-6,16,2),M.caseBase);div.position.set(0,3,14.5);caseG.add(div);
   [[-22.65,-17.55],[21.75,17.45]].forEach(function(h){cyl(3.4,3.4,M.caseBase,h[0],h[1],-5);cyl(2.7,0.9,M.gland,h[0],h[1],0,20)});
 
-  /* bateria de lítio 3,6 V com etiqueta */
+  /* bateria de lítio 3,6 V, 8.200 mAh, não recarregável: logo branca direto sobre o azul */
   (function(){
     var cv=document.createElement('canvas');cv.width=1024;cv.height=512;var cx=cv.getContext('2d');
     cx.fillStyle='#1f55d6';cx.fillRect(0,0,1024,512);
-    cx.translate(205,256);cx.rotate(Math.PI/2);
-    cx.fillStyle='#f4f5f6';cx.fillRect(-176,-150,352,300);
-    cx.fillStyle='#15171a';cx.textAlign='center';cx.textBaseline='middle';
-    ['Bateria de Lítio','3,6 V — 8.200 mAh','Não recarregável'].forEach(function(t,i){
-      cx.font=(i===1?'700 38px':'700 32px')+' sans-serif';cx.fillText(t,0,-72+i*72);
-    });
     var tx=new T.CanvasTexture(cv);tx.encoding=T.sRGBEncoding;tx.anisotropy=4;
+    var lg=new Image();
+    lg.onload=function(){
+      var w=300,h=w*lg.naturalHeight/lg.naturalWidth;
+      cx.save();cx.translate(205,256);cx.rotate(Math.PI/2);cx.drawImage(lg,-w/2,-h/2,w,h);cx.restore();
+      tx.needsUpdate=true;
+    };
+    lg.src=LOGO_IGOAL;
     var side=new T.MeshStandardMaterial({map:tx,roughness:0.35}), end=mat(0x1f55d6,{roughness:0.35});
     var b=new T.Mesh(new T.CylinderGeometry(13,13,50,40),[side,end,end]);b.rotation.z=Math.PI/2;b.position.set(2,8,30);caseG.add(b);
   })();
@@ -498,8 +499,8 @@ function buildScene(){
     $('toggleCase').textContent=v?'Fechar gabinete':'Abrir gabinete';
     go(v?VIEW_BTN:VIEW_CASE,0.045);
     if(mode==='idle'){
-      if(v)setStatus('idle','Gabinete aberto','Escolha Zerar contadores ou Forçar publicação para ver o procedimento.');
-      else setStatus('idle','Gabinete fechado','Escolha Zerar contadores ou Forçar publicação para ver o procedimento.');
+      if(v)setStatus('idle','Gabinete aberto','Escolha Zerar Contadores ou Forçar Publicação para ver o procedimento.');
+      else setStatus('idle','Gabinete fechado','Escolha Zerar Contadores ou Forçar Publicação para ver o procedimento.');
     }
   }
   caseApi={open:function(){setOpen(true)},isOpen:function(){return isOpen},focus:function(){go(VIEW_BTN,0.045)}};

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Guia de Instalação iGate S</title>
+<title>Guia de Instalação iGate S / S+</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -144,22 +144,22 @@ html.embed .prod svg{max-height:340px;width:100%}
     <div class="htxt">
       <img class="hlogo" src="marca/logo-igoal-branco.png" alt="iGoal Tecnologia">
       <div class="eyebrow">Guia de instalação</div>
-      <h1>Como instalar o iGate S e os endpoints iGoal</h1>
+      <h1>Como Instalar o iGate S / S+ e os Endpoints iGoal</h1>
       <p class="lead">Escolha o equipamento e depois a ligação. Cada opção mostra a instalação em animação, passo a passo, com os bornes certos e o que conferir no final.</p>
-      <div class="badges"><span class="badge"><b>Envio pela rede celular</b> com chip M2M</span><span class="badge"><b>Dados na Dex</b>, a plataforma da iGoal</span></div>
+      <div class="badges"><span class="badge"><b>Envio pela Rede Celular</b> com Chip M2M</span><span class="badge"><b>Dados na DEx</b>, a Plataforma da iGoal</span></div>
     </div>
     <div class="prods">
       <article class="prod" aria-labelledby="hpGw">
         <div class="pk">Gateway</div>
-        <h2 id="hpGw">iGate S</h2>
+        <h2 id="hpGw">iGate S / S+</h2>
         <p class="pd">Medidores e equipamentos com fio: concessionária pela SSU, RS485, Modbus TCP. Envia tudo pela rede celular.</p>
         <svg id="heroGw" viewBox="110 0 760 650" aria-label="iGate S com os pontos de ligação"></svg>
         <div class="plinks" id="lGw"></div>
       </article>
       <article class="prod" aria-labelledby="hpEp">
         <div class="pk">Endpoint</div>
-        <h2 id="hpEp">LoRaWAN / NB-IoT</h2>
-        <p class="pd">Medidores de gás e água com emissor de pulso. Até 8 medidores por endpoint, publicando direto na Dex.</p>
+        <h2 id="hpEp">iGate LoRaWAN / NB-IoT</h2>
+        <p class="pd">Medidores de gás e água com emissor de pulso. Até 8 medidores por endpoint, publicando direto na DEx.</p>
         <svg id="heroEp" viewBox="0 0 640 650" aria-label="Endpoint iGoal com os pontos de ligação"></svg>
         <div class="plinks" id="lEp"></div>
       </article>
@@ -208,7 +208,7 @@ html.embed .prod svg{max-height:340px;width:100%}
   </section>
 
   <section class="ext" id="ext" hidden>
-    <iframe id="extFrame" allow="serial" title="Zerar contadores e publicar" style="display:block;width:100%;height:780px;border:0"></iframe>
+    <iframe id="extFrame" allow="serial" title="Zerar Contadores e Publicar" style="display:block;width:100%;height:780px;border:0"></iframe>
   </section>
 
   <p class="foot">Material de apoio da iGoal. Bornes conforme a etiqueta do iGate S: alimentação 9 a 30 Vcc nos bornes 3 (GND) e 4 (VCC); receptor do cabo óptico SSU nos bornes 1 (SU+) e 2 (SU−), com o emissor na saída SSU do medidor; RS485 no 9 (B), 10 (GND) e 11 (A); entradas digitais em 13 a 16 (até 24 Vcc); Modbus TCP pela porta Ethernet. Medidores, multimedidor, sensor, equipamento Modbus TCP, fonte, cores de fios, displays e valores são ilustrativos: siga o manual de cada equipamento.</p>
@@ -366,7 +366,7 @@ function buildPower(svg){
       {a:5,t:"Fonte desligada antes de ligar",d:"Use fonte Vcc de trilho DIN dentro da faixa. Desligue a rede antes de mexer nos fios."},
       {a:11,t:"+V da fonte no borne 4 (VCC)",d:"Solte o parafuso do borne 4, encaixe o fio positivo e aperte. Puxe de leve para conferir."},
       {a:19,t:"−V da fonte no borne 3 (GND)",d:"O negativo vai no borne 3. Inverter a polaridade pode danificar o equipamento."},
-      {a:28,t:"Confira e energize",d:"Revise + no 4 e − no 3 antes de ligar a fonte. Com o chip M2M ativo, o iGate S envia os dados pela rede celular para a Dex."},
+      {a:28,t:"Confira e energize",d:"Revise + no 4 e − no 3 antes de ligar a fonte. Com o chip M2M ativo, o iGate S envia os dados pela rede celular para a DEx."},
     ],
     mats:["Fonte 12 ou 24 Vcc (faixa aceita: 9 a 30 Vcc, mínimo 1 A)","Chip M2M ativo no gateway","Cabo flexível 0,5 a 1,5 mm² vermelho e preto","Chave de fenda pequena","Trilho DIN"],
     errs:[["Polaridade invertida","+ no borne 3 e − no 4. Pode danificar o gateway: confira antes de ligar."],["Fonte fora da faixa","Abaixo de 9 Vcc o gateway reinicia; acima de 30 Vcc há risco de queima."],["Fio no borne errado","Os bornes 1 e 2 são do receptor SSU (SU+ e SU−). A alimentação é só 3 e 4."],["Fonte subdimensionada","Fonte com menos de 1 A pode derrubar o gateway durante a transmissão."]],
@@ -436,7 +436,7 @@ function buildMulti(svg){
       {a:24.5,t:"B no borne 9",d:"O B (às vezes D− ou −) vai no borne 9. Trocar A com B é o erro mais comum: nada comunica."},
       {a:29.5,t:"GND no borne 10",d:"A referência (GND ou malha) vai no borne 10. Aterre a malha só numa ponta."},
       {a:35,t:"Mais de um medidor: ligue em varal",d:"Do primeiro medidor para o próximo: A com A, B com B, GND com GND. Cada um com endereço diferente (001, 002…)."},
-      {a:43,t:"Confira na Dex",d:"Cada endereço aparece com suas grandezas na Dex, enviado pela rede celular (chip M2M). Se algum não aparecer, confira endereço, serial e A/B."},
+      {a:43,t:"Confira na DEx",d:"Cada endereço aparece com suas grandezas na DEx, enviado pela rede celular (chip M2M). Se algum não aparecer, confira endereço, serial e A/B."},
     ],
     mats:["Cabo par trançado blindado (ex.: 2 × 24 AWG + malha)","Chave de fenda pequena","Manual do multimedidor (menu de endereço e serial)","Terminador de 120 Ω se o barramento for longo, conforme o manual"],
     errs:[["A e B invertidos","Nenhuma resposta. Troque os fios dos bornes 9 e 11."],["Endereço repetido","Dois medidores com o mesmo endereço dão respostas corrompidas. Cada um precisa de um endereço único."],["Serial diferente","Baud, paridade ou stop bits diferentes do gateway: o medidor não responde."],["RS232 no lugar do RS485","Os bornes 5, 6 e 7 são RS232 (RX, GND, TX). O multimedidor RS485 vai no 9, 10 e 11."]],
@@ -492,7 +492,7 @@ function buildTemp(svg){
   const tAd=tag(svg,270,130,"End. 010 · 9600 8N1",{anchor:"middle"});
   const tPw=tag(svg,30,470,"tensão conforme o manual do sensor",{anchor:"middle",size:13});
   const tA=tag(svg,2340,205,"A → borne 11",{anchor:"middle",...BIG}),tB=tag(svg,2340,205,"B → borne 9",{anchor:"middle",...BIG}),tG=tag(svg,2340,205,"GND → borne 10",{anchor:"middle",...BIG});
-  const ok=tag(svg,1030,30,"Temperatura na Dex: 24,6 °C",{anchor:"middle",size:18});
+  const ok=tag(svg,1030,30,"Temperatura na DEx: 24,6 °C",{anchor:"middle",size:18});
   const sd=screwdriver(svg);
   return {
     dur:46,
@@ -503,7 +503,7 @@ function buildTemp(svg){
       {a:11,t:"Alimente o sensor",d:"Ligue o V+ e o GND do sensor na fonte indicada pelo fabricante. Confira a polaridade antes de energizar."},
       {a:17,t:"Leve o cabo RS485 até o gateway",d:"Use par trançado. Saia dos bornes A, B e GND do sensor até o conector de cima do iGate S."},
       {a:23,t:"A no 11, B no 9, GND no 10",d:"A no borne 11, B no borne 9 e a referência GND no borne 10. Aperte e puxe de leve cada fio."},
-      {a:35,t:"Confira na Dex",d:"A temperatura aparece na plataforma com o endereço configurado."},
+      {a:35,t:"Confira na DEx",d:"A temperatura aparece na plataforma com o endereço configurado."},
     ],
     mats:["Sensor de temperatura RS485 (Modbus RTU)","Fonte conforme o manual do sensor","Cabo par trançado","Chave de fenda pequena"],
     errs:[["Sem alimentação","O display apaga e o sensor não responde. Confira a fonte e a polaridade."],["Endereço igual a outro equipamento","Respostas corrompidas no barramento. Escolha um endereço livre."],["A e B invertidos","Nenhuma resposta. Troque os fios dos bornes 9 e 11."],["Sensor perto de fonte de calor","A leitura fica fora da realidade. Instale longe de motores, painéis e sol direto."]],
@@ -640,7 +640,7 @@ function buildUtil(svg){
   const tIn=tag(svg,590,430,"vermelho → SU+ · azul → SU−",{anchor:"middle",size:13});
   const t1=tag(svg,2340,205,"Receptor vermelho → borne 1 (SU+)",{anchor:"middle",...BIG});
   const t2=tag(svg,2340,205,"Receptor azul → borne 2 (SU−)",{anchor:"middle",...BIG});
-  const ok=tag(svg,1030,48,"Leitura recebida na Dex: 48.210,7 kWh",{anchor:"middle",size:18});
+  const ok=tag(svg,1030,48,"Leitura recebida na DEx: 48.210,7 kWh",{anchor:"middle",size:18});
   const sd=screwdriver(svg);
   const ZV=[260,60,800,450], ZS=[-60,40,800,450];
   return {
@@ -654,7 +654,7 @@ function buildUtil(svg){
       {a:27,t:"Leve o cabo do receptor até o iGate S",d:"O cabo desce pela parede até o gateway, no conector de cima. Use eletroduto ou presilhas, longe de cabos de força."},
       {a:32,t:"Vermelho no borne 1 (SU+)",d:"Solte o parafuso do borne 1, encaixe o fio vermelho do receptor e aperte."},
       {a:37,t:"Azul no borne 2 (SU−)",d:"O fio azul do receptor vai no borne 2. Puxe de leve cada fio para conferir o aperto."},
-      {a:43,t:"Confira na Dex",d:"Com o gateway alimentado e o chip M2M ativo, a leitura do medidor passa a aparecer na plataforma."},
+      {a:43,t:"Confira na DEx",d:"Com o gateway alimentado e o chip M2M ativo, a leitura do medidor passa a aparecer na plataforma."},
     ],
     mats:["Cabo óptico SSU iGoal (emissor + receptor)","Chave de fenda pequena","Parafusos para a flange do emissor","Presilhas ou eletroduto para o cabo"],
     errs:[["Lados trocados","O emissor (flange quadrada) fica na lateral do quadro, do lado do medidor. O receptor (conector redondo) vai no iGate S."],["Vermelho e azul invertidos","Sem leitura. Vermelho no SU+ e azul no SU−, nas duas pontas."],["Receptor mal rosqueado","A luz não chega ao receptor e a leitura falha. Rosqueie até o fim."],["Fio no borne errado","O receptor vai só nos bornes 1 e 2. No outro conector de cima, bornes 9 a 11, fica o RS485."]],
@@ -709,7 +709,7 @@ function buildTcp(svg){
   const tPort=tag(svg,RJ[0]+10,RJ[1]-60,"porta Ethernet do iGate S",{anchor:"middle",size:14});
   const tCfg=tag(svg,270,560,"IP fixo na mesma rede · porta 502",{anchor:"middle",size:14});
   const tCad=tag(svg,1030,48,"Cadastro: IP 192.168.1.50 · porta 502 · Unit ID 1",{anchor:"middle",size:16});
-  const ok=tag(svg,1030,88,"Leituras chegando na Dex",{anchor:"middle",size:16});
+  const ok=tag(svg,1030,88,"Leituras chegando na DEx",{anchor:"middle",size:16});
   return {
     dur:44,
     cams:[[0,W],[5,W],[6.5,[70,150,520,292.5]],[13,[70,150,520,292.5]],[14.5,W],[18,W],[19.5,[160,330,400,225]],[23,[160,330,400,225]],[24.5,W],[27,W],[28.5,[1010,200,320,180]],[33,[1010,200,320,180]],[34.5,W],[44,W]],
@@ -719,7 +719,7 @@ function buildTcp(svg){
       {a:14,t:"Use cabo de rede RJ45",d:"Cabo Cat5e ou Cat6 com conectores RJ45. Se houver vários equipamentos, use um switch no painel."},
       {a:19,t:"Conecte no equipamento",d:"Encaixe o conector RJ45 na porta Ethernet do equipamento até ouvir o clique da trava."},
       {a:24,t:"Conecte no iGate S",d:"A outra ponta vai na porta Ethernet na frente do iGate S. Encaixe até travar."},
-      {a:34,t:"Cadastre e confira",d:"Na configuração do gateway, cadastre o IP, a porta e o Unit ID do equipamento. As leituras passam a chegar na Dex."},
+      {a:34,t:"Cadastre e confira",d:"Na configuração do gateway, cadastre o IP, a porta e o Unit ID do equipamento. As leituras passam a chegar na DEx."},
     ],
     mats:["Cabo de rede Cat5e/Cat6 com conectores RJ45","Switch de trilho DIN, se houver mais de um equipamento","IP, porta e Unit ID do equipamento","Manual do equipamento (configuração de rede)"],
     errs:[["IP em outra faixa","O gateway não alcança o equipamento. IP, máscara e faixa precisam ser compatíveis."],["IP repetido na rede","Conflito de endereço e comunicação intermitente. Reserve um IP fixo."],["Porta ou Unit ID errado","Conecta, mas não responde. Confira a porta (normalmente 502) e o Unit ID."],["Conector sem trava","O cabo solta com vibração. Encaixe até o clique e prenda o cabo."]],
@@ -806,7 +806,7 @@ function buildEndpoint(kind){ return function(svg){
   else{el("rect",{x:1245,y:120,width:10,height:150,fill:"#8b9295"},net);el("rect",{x:1247,y:60,width:6,height:64,rx:3,fill:"#e6e8ea"},net);el("rect",{x:1224,y:124,width:52,height:58,rx:5,fill:"#eceeef",stroke:"#9aa1a4"},net);txt(net,1250,290,"REDE LoRaWAN",{"text-anchor":"middle","font-size":12,"font-weight":700,fill:"#1d2326"});}
   const cloud=el("g",{transform:"translate(40,-20)"},svg);
   el("path",{d:"M1010 92 a22 22 0 0 1 20 -30 a28 28 0 0 1 52 -6 a20 20 0 0 1 28 24 a16 16 0 0 1 -4 32 h-82 a20 20 0 0 1 -14 -20z",fill:"#0A1724",stroke:"#C6F68D","stroke-width":1.5},cloud);
-  txt(cloud,1062,98,"Dex",{"text-anchor":"middle","font-family":"Rajdhani, sans-serif","font-weight":700,"font-size":20,fill:"#fff"});
+  txt(cloud,1062,98,"DEx",{"text-anchor":"middle","font-family":"Rajdhani, sans-serif","font-weight":700,"font-size":20,fill:"#fff"});
   const link=el("path",{d:"M1240 110 C 1210 70 1190 66 1160 72",stroke:"#C6F68D","stroke-width":2.5,fill:"none","stroke-dasharray":"6 6",opacity:0},svg);
   const okRx=tag(svg,1102,130,"8 canais recebidos",{anchor:"middle",size:15});
   const tShaft=tag(svg,1000,470,"4 apartamentos × (gás + água) = 8 medidores",{anchor:"middle",size:18});
@@ -837,7 +837,7 @@ function buildEndpoint(kind){ return function(svg){
   const tape=el("g",{opacity:0},svg);
   PAIRS.forEach((_,k)=>el("rect",{x:X0+510,y:PY0+k*PD-19,width:60,height:38,rx:10,fill:"#0c0c0c"},tape));
   const tNoPol=tag(svg,X0+855,Y0+520,"reed-switch não tem polaridade",{anchor:"middle",size:18});
-  // ----- Dex: 8 canais -----
+  // ----- DEx: 8 canais -----
   const Y8=800, EM=[X0,Y8,1280,720];
   el("rect",{x:X0,y:Y8,width:1280,height:720,fill:"#0E1E2D"},svg);
   txt(svg,X0+640,Y8+56,"1 ENDPOINT · 8 MEDIDORES",{"text-anchor":"middle",fill:"#C6F68D","font-family":"Rajdhani, sans-serif","font-weight":700,"font-size":30,"letter-spacing":4});
@@ -865,15 +865,15 @@ function buildEndpoint(kind){ return function(svg){
     dur:66,
     cams:[[0,W],[4,W],[5.5,ZR],[11,ZR],[12.5,W],[22,W],[23,CU],[40,CU],[41,W],[52,W],[53,EM],[66,EM]],
     steps:[
-      {a:0,t:NB?"Shaft com endpoint NB-IoT":"Shaft com endpoint LoRaWAN",d:`No shaft do andar, cada apartamento tem medidor de gás e hidrômetro. Um endpoint ${NB?"NB-IoT":"LoRaWAN"} lê os 8 pelos pulsos e publica direto na Dex, sem o iGate S.`},
+      {a:0,t:NB?"Shaft com endpoint NB-IoT":"Shaft com endpoint LoRaWAN",d:`No shaft do andar, cada apartamento tem medidor de gás e hidrômetro. Um endpoint ${NB?"NB-IoT":"LoRaWAN"} lê os 8 pelos pulsos e publica direto na DEx, sem o iGate S.`},
       {a:4,t:"Anote as leituras e encaixe os emissores",d:"Em cada medidor: anote a leitura e encaixe o emissor de pulso. No gás, abaixo do totalizador; no hidrômetro, na tampa da relojoaria."},
       {a:11,t:"Leve os cabos pela eletrocalha",d:"O cabo de cada emissor sobe pela eletrocalha do shaft até a caixa de emendas. Identifique cada cabo com o apartamento e o tipo."},
       {a:17,t:"Fixe o endpoint no shaft",d:"Fixe o endpoint na parede do shaft, perto da porta e da caixa de emendas. Se o sinal ficar fraco no local, leve o endpoint para fora do shaft."},
       {a:23,t:"8 pares, um por medidor",d:"O cabo do endpoint tem 8 pares, cada um com uma cor sólida e a mesma cor com branco. Cada par é um canal."},
       {a:29,t:"Emende cada par no seu emissor",d:"Siga a ordem: canal 1 no gás do AP 101, canal 2 na água do AP 101, e assim por diante. Reed-switch é contato seco, sem polaridade."},
       {a:35,t:"Isole todas as emendas",d:"Fita autofusão em cada emenda. Feche a caixa de emendas e prenda os cabos na eletrocalha."},
-      {a:41,t:"Teste e publicação",d:NB?"Com consumo, cada canal conta os pulsos do seu medidor. Na publicação, as 8 contagens seguem pela rede NB-IoT até a Dex.":"Com consumo, cada canal conta os pulsos do seu medidor. Na publicação, as 8 contagens seguem pela rede LoRaWAN até a Dex."},
-      {a:53,t:"Confira os 8 canais na Dex",d:"Cada canal aparece com o seu medidor. Anote a relação canal × apartamento para cadastrar na plataforma."},
+      {a:41,t:"Teste e publicação",d:NB?"Com consumo, cada canal conta os pulsos do seu medidor. Na publicação, as 8 contagens seguem pela rede NB-IoT até a DEx.":"Com consumo, cada canal conta os pulsos do seu medidor. Na publicação, as 8 contagens seguem pela rede LoRaWAN até a DEx."},
+      {a:53,t:"Confira os 8 canais na DEx",d:"Cada canal aparece com o seu medidor. Anote a relação canal × apartamento para cadastrar na plataforma."},
     ],
     mats:[NB?"Endpoint iGoal NB-IoT com chip ativo":"Endpoint iGoal LoRaWAN","8 emissores de pulso (4 de gás e 4 de hidrômetro)","Caixa de emendas, conectores e fita autofusão","Etiquetas para identificar cada cabo por apartamento"],
     errs:[["Sinal fraco dentro do shaft","Porta metálica e paredes atenuam o rádio. Confira o sinal no local e, se precisar, fixe o endpoint do lado de fora."],["Canais trocados","O consumo de um apartamento aparece em outro. Etiquete cada cabo e siga a tabela canal × apartamento."],["Emenda sem isolação","Umidade no shaft causa pulsos falsos ou perda de contagem. Use fita autofusão."],[NB?"Sem cobertura NB-IoT":"Sem cobertura LoRaWAN",NB?"Confira o sinal da operadora no ponto de instalação antes de fixar o endpoint.":"Confira se há rede LoRaWAN alcançando o ponto antes de fixar o endpoint."]],
@@ -906,16 +906,16 @@ function buildEndpoint(kind){ return function(svg){
 };}
 
 const GUIDES=[
-  {id:"alimentacao",grp:"gw",name:"Alimentação do gateway",tag:"9 a 30 Vcc · bornes 3 e 4",d:"Primeiro passo de toda instalação.",build:buildPower},
-  {id:"concessionaria",grp:"gw",name:"Medidor da concessionária",tag:"SSU · bornes 1 e 2 (SU+ / SU−)",d:"Saída Serial de Usuário na lateral do painel até o gateway.",build:buildUtil},
+  {id:"alimentacao",grp:"gw",name:"Alimentação do Gateway",tag:"9 a 30 Vcc · bornes 3 e 4",d:"Primeiro passo de toda instalação.",build:buildPower},
+  {id:"concessionaria",grp:"gw",name:"Medidor da Concessionária",tag:"SSU · bornes 1 e 2 (SU+ / SU−)",d:"Saída Serial de Usuário na lateral do painel até o gateway.",build:buildUtil},
   {id:"multimedidor",grp:"gw",name:"Multimedidor RS485",tag:"RS485 · bornes 9 · 10 · 11",d:"Um ou vários medidores em varal no mesmo barramento.",build:buildMulti},
-  {id:"temperatura",grp:"gw",name:"Sensor de temperatura",tag:"RS485 · bornes 9 · 10 · 11",d:"Sensor Modbus com alimentação própria.",build:buildTemp},
+  {id:"temperatura",grp:"gw",name:"Sensor de Temperatura",tag:"RS485 · bornes 9 · 10 · 11",d:"Sensor Modbus com alimentação própria.",build:buildTemp},
   {id:"modbus-tcp",grp:"gw",name:"Equipamento Modbus TCP",tag:"Ethernet · porta RJ45",d:"Inversor, medidor ou CLP pela rede.",build:buildTcp},
-  {id:"esquema-ligacao",grp:"gw",name:"Esquema de ligação",tag:"Gateway no trilho DIN · bornes 1 a 16",d:"O gateway em 3D: escolha a ligação e veja cada fio no seu borne.",ext:"gateway-3d.html"},
-  {id:"endpoint-lorawan",grp:"ep",name:"Endpoint LoRaWAN",tag:"Pulso · até 8 medidores",d:"Shaft com 4 apartamentos: 8 medidores de gás e água.",build:buildEndpoint("lora")},
-  {id:"endpoint-nbiot",grp:"ep",name:"Endpoint NB-IoT",tag:"Pulso · até 8 medidores",d:"Shaft com 4 apartamentos: 8 medidores, rede NB-IoT.",build:buildEndpoint("nb")},
-  {id:"configurar-nb",grp:"ep",name:"Configurar broker e APN do iGate NB",tag:"iGate NB · conversor FTDI · Chrome ou Edge",d:"Troca o servidor MQTT e a operadora da placa pela serial, direto no navegador.",ext:"configurador/"},
-  {id:"zerar-publicar",grp:"ep",name:"Zerar contadores e publicar",tag:"Botões SW1 e SW2 · dentro do gabinete",d:"Zerar os contadores e forçar uma publicação pelos botões da placa.",ext:"reset-igatenb.html"},
+  {id:"esquema-ligacao",grp:"gw",name:"Esquema de Ligação",tag:"Gateway no trilho DIN · bornes 1 a 16",d:"O gateway em 3D: escolha a ligação e veja cada fio no seu borne.",ext:"gateway-3d.html"},
+  {id:"endpoint-lorawan",grp:"ep",name:"iGate LoRa",tag:"Pulso · até 8 medidores",d:"Shaft com 4 apartamentos: 8 medidores de gás e água.",build:buildEndpoint("lora")},
+  {id:"endpoint-nbiot",grp:"ep",name:"iGate NB",tag:"Pulso · até 8 medidores",d:"Shaft com 4 apartamentos: 8 medidores, rede NB-IoT.",build:buildEndpoint("nb")},
+  {id:"configurar-nb",grp:"ep",name:"Configurar Broker e APN do iGate NB",tag:"iGate NB · conversor FTDI · Chrome ou Edge",d:"Troca o servidor MQTT e a operadora da placa pela serial, direto no navegador.",ext:"configurador/"},
+  {id:"zerar-publicar",grp:"ep",name:"Zerar Contadores e Publicar",tag:"Botões SW1 e SW2 · dentro do gabinete",d:"Zerar os contadores e forçar uma publicação pelos botões da placa.",ext:"reset-igatenb.html"},
 ];
 
 /* ---------- abertura ---------- */
@@ -940,7 +940,7 @@ function callout(s,px,py,lx,ly,title,sub,id,anchor){
   el("image",{href:GWFRONT,x:150,y:40,width:321*1.15,height:501*1.15},s);
   callout(s,150+1.15*120,40+1.15*22,540,60,"Em cima: 1–4 e 9–12","SSU · alimentação · RS485","concessionaria","start");
   callout(s,150+1.15*275,40+1.15*199,560,232,"Porta Ethernet","Modbus TCP","modbus-tcp","start");
-  callout(s,150+1.15*283,40+1.15*300,560,352,"Rede celular","chip M2M · envio para a Dex","alimentacao","start");
+  callout(s,150+1.15*283,40+1.15*300,560,352,"Rede Celular","chip M2M · envio para a DEx","alimentacao","start");
   callout(s,150+1.15*120,40+1.15*480,520,560,"Embaixo: 5–8 e 13–16","RS232 · entradas digitais",null,"start");
   const e=$("heroEp");
   const de=el("defs",{},e);
@@ -949,11 +949,11 @@ function callout(s,px,py,lx,ly,title,sub,id,anchor){
   el("ellipse",{cx:235,cy:520,rx:170,ry:14,fill:"#000",opacity:.45},e);
   el("image",{href:EPIMG,x:40,y:210,width:380,height:306},e);
   // ponta do cabo: (40+380*0.993, 210+306*0.343)
-  callout(e,416,315,350,120,"Cabo com 8 pares","um par por medidor","endpoint-lorawan","start");
+  callout(e,416,315,350,120,"Cabo com 8 Pares","um par por medidor","endpoint-lorawan","start");
   callout(e,190,380,630,560,"LoRaWAN ou NB-IoT","gás e água · até 8 medidores","endpoint-nbiot","end");
 })();
 const cards=$("cards");
-[["gw","iGate S · gateway","lGw"],["ep","Endpoint LoRaWAN / NB-IoT","lEp"]].forEach(([grp,label,lid])=>{
+[["gw","iGate S / S+ · gateway","lGw"],["ep","iGate LoRaWAN / NB-IoT","lEp"]].forEach(([grp,label,lid])=>{
   const box=document.createElement("div");box.className="grp";
   box.innerHTML=`<h3>${label}</h3>`;const gg=document.createElement("div");gg.className="ggrid";box.appendChild(gg);cards.appendChild(box);
   GUIDES.filter(g=>g.grp===grp).forEach((g,i)=>{
